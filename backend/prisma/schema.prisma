@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Site {
+  id        String   @id @default(uuid())
+  address   String   @unique
+  pollData  Poll[]
+  createdAt DateTime @default(now())
+}
+
+model Poll {
+  id            String            @id @default(uuid())
+  siteId        String
+  site          Site              @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  statusCode    String
+  retryCount    Int               @default(0)
+  requestMethod EnumRequestMethod
+  createdAt     DateTime          @default(now())
+}
+
+model OperationState {
+  id            String            @id @default(uuid())
+  pollingState  PollingState
+  requestMethod EnumRequestMethod @default(GET)
+  lastPollTime  DateTime
+}
+
+enum PollingState {
+  IDLE
+  POLLING
+}
+
+enum EnumRequestMethod {
+  GET
+  HEAD
+  PING
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  email    String  @unique
+  hash     String
+  hashedRt String?
+  role     Role    @default(MANAGER)
+
+  @@map("users")
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  MANAGER
+}
