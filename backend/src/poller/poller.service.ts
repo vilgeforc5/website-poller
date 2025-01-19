@@ -99,9 +99,8 @@ export class PollerService {
         });
     }
 
-    @Cron(CronExpression.EVERY_DAY_AT_6AM)
-    async startPoll() {
-        this.logger.info("startPoll");
+    async triggerPoll() {
+        this.logger.info("triggerPoll");
 
         const state = await this.stateService.getState();
 
@@ -112,6 +111,17 @@ export class PollerService {
 
             return;
         }
+
+        await this.stateService.updatePollingState(true);
+        this.startPoll();
+
+        return;
+    }
+
+    @Cron(CronExpression.EVERY_DAY_AT_6AM)
+    private async startPoll() {
+        this.logger.info("startPoll");
+        const state = await this.stateService.getState();
 
         await this.stateService.updatePollingState(true);
 

@@ -2,13 +2,13 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { queryKeys } from "@/api/queryKeys.ts";
 
-export const useSitesQuery = () => {
+export const useAppState = () => {
     const sites = useQuery({
         queryFn: () => {
-            return axios.get("api/site");
+            return axios.get("api/state/get-state");
         },
-        staleTime: 5000,
-        queryKey: [queryKeys.siteList],
+        refetchInterval: 5000,
+        queryKey: [queryKeys.state],
     });
 
     return sites?.data?.data;

@@ -8,6 +8,7 @@ import { AtGuard } from "src/common/guards/at.guard";
 import { APP_GUARD } from "@nestjs/core";
 import { PollerModule } from "./poller/poller.module";
 import { ScheduleModule } from "@nestjs/schedule";
+import { StateModule } from "src/layers/state/state.module";
 
 @Module({
     imports: [
@@ -18,6 +19,7 @@ import { ScheduleModule } from "@nestjs/schedule";
         PollModule,
         AuthModule,
         PollerModule,
+        StateModule,
     ],
     providers: [
         {

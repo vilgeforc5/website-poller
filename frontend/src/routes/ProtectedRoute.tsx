@@ -2,10 +2,10 @@ import { Navigate, Outlet } from "react-router";
 import { useAuth } from "@/auth/AuthProvider.tsx";
 
 export const ProtectedRoute = () => {
-    const { refresh, access, isReady } = useAuth();
+    const { refresh, access, isPending } = useAuth();
 
-    if (!isReady) {
-        return null;
+    if (isPending) {
+        return <div></div>;
     }
 
     if (!refresh || !access) {
