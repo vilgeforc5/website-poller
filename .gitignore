@@ -1,6 +1,7 @@
 # IDEs
 .idea
 .vscode
+.DS_Store
 
 # Below is a copy of https://github.com/github/gitignore/blob/HEAD/Node.gitignore
 
