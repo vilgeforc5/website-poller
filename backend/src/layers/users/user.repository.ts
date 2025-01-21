@@ -16,8 +16,10 @@ export class UserRepository {
         return this.prismaService.user.findUnique({ where: { email } });
     }
 
-    getByRole(role: Role) {
-        return this.prismaService.user.findMany({ where: { role } });
+    getByRole(roles: Role[]) {
+        return this.prismaService.user.findMany({
+            where: { OR: roles.map((role) => ({ role })) },
+        });
     }
 
     create(

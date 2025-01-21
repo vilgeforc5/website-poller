@@ -1,34 +1,24 @@
 import { SimpleGrid, Stack, Title } from "@mantine/core";
 import StatsCard from "@/components/StatsCard/StatsCard";
 import MobileDesktopChart from "@/components/CodesChart/CodesChart";
+import { SiteInfoCard } from "@/components/StatsCard/Info/SiteInfoCard";
+import { PollingInfoCard } from "@/components/StatsCard/Info/PollingInfoCard";
 
-export default function Home() {
+export default async function Home() {
     return (
         <Stack>
             <Title>Главная</Title>
             <SimpleGrid cols={{ base: 1, lg: 2 }}>
                 <SimpleGrid cols={2}>
-                    <StatsCard
-                        data={{
-                            title: "Всего сайтов",
-                            value: "111",
-                            diff: 1,
-                            description: "Последнее изменение: вчера",
-                        }}
-                    />
+                    <SiteInfoCard />
                     <StatsCard
                         data={{
                             title: "Процент позитивных статус кодов",
                             value: "90%",
+                            description: "За последний день",
                         }}
                     />
-                    <StatsCard
-                        data={{
-                            title: "Количество опросов за сегодня",
-                            value: "3",
-                            description: "Последний опрос: сегодня",
-                        }}
-                    />
+                    <PollingInfoCard />
                     <StatsCard
                         data={{
                             title: "Telegram статус",

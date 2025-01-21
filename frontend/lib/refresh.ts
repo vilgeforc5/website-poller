@@ -1,7 +1,7 @@
 import { parseJwt } from "@/lib/auth";
 
 export const refresh = async (oldRefresh: string) => {
-    const response = await fetch("http://localhost:3000/auth/refresh", {
+    const response = await fetch(process.env.BASE_API_URL + "/auth/refresh", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

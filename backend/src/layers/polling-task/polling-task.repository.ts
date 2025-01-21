@@ -29,4 +29,36 @@ export class PollingTaskRepository {
             },
         });
     }
+
+    getNumberOfTasksToday() {
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
+
+        const todayEnd = new Date();
+        todayEnd.setHours(23, 59, 59, 999);
+
+        return this.prismaService.pollingTask.count({
+            where: {
+                pollingState: "IDLE",
+                endTime: {
+                    gte: todayStart,
+                    lte: todayEnd,
+                },
+            },
+        });
+    }
+
+    async getLastPollingTaskTime(): Promise<Date | undefined> {
+        const lastTask = await this.prismaService.pollingTask.findFirst({
+            where: { pollingState: "IDLE" },
+            orderBy: {
+                startTime: "desc",
+            },
+            select: {
+                endTime: true,
+            },
+        });
+
+        return lastTask?.endTime;
+    }
 }

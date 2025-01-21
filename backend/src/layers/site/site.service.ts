@@ -44,8 +44,19 @@ export class SiteService {
         return this.siteRepository.getPaginated(userId, skip, take);
     }
 
+    async getLatestInfo(userId: number) {
+        const count = await this.siteRepository.count(userId);
+        const latestRecord = await this.siteRepository.getLatestRecord(userId);
+        const diff = await this.siteRepository.getCountDifference(userId);
+
+        return { count, createdAt: latestRecord?.createdAt, diff };
+    }
+
     private async getIdsWithAdmins(id: number) {
-        const admins = await this.usersService.findByRole(Role.ADMIN);
+        const admins = await this.usersService.findByRole([
+            Role.ADMIN,
+            Role.OWNER,
+        ]);
 
         if (!admins) {
             throw new InternalServerErrorException();

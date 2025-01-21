@@ -16,6 +16,7 @@ export async function POST(req: NextApiRequest, res: NextApiResponse) {
         const { value } = refreshToken;
         const { parsedRefresh, refresh_token, parsedAccess, access_token } =
             await refresh(value);
+
         const headers = new Headers();
 
         headers.set(

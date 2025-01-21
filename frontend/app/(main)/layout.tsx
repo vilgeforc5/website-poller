@@ -9,7 +9,12 @@ import { HeaderContainer } from "@/components/Header/HeaderContainer";
 import { NavBar } from "@/components/NavBar/NavBar";
 import styles from "./main.module.scss";
 
-export default function MainLayout({ children }: { children: ReactNode }) {
+export default function MainLayout({
+    children,
+}: {
+    children: ReactNode;
+    cards: ReactNode;
+}) {
     return (
         <AppShell
             header={{ height: 50 }}

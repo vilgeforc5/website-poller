@@ -34,4 +34,11 @@ export class PollingTaskService {
 
         return runningTasks.length !== 0;
     }
+
+    async getLatestInfo() {
+        return {
+            count: await this.pollingRepository.getNumberOfTasksToday(),
+            lastDate: await this.pollingRepository.getLastPollingTaskTime(),
+        };
+    }
 }

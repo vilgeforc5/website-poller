@@ -34,8 +34,8 @@ export class UsersService {
         return this.userRepository.getById(id);
     }
 
-    findByRole(role: Role) {
-        return this.userRepository.getByRole(role);
+    findByRole(roles: Role[]) {
+        return this.userRepository.getByRole(roles);
     }
 
     update(id: number, updateUserDto: UpdateUserDto) {

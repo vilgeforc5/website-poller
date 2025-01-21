@@ -6,7 +6,7 @@ export class CreatePollDto {
     siteId: number;
 
     @IsString()
-    statusCode: string;
+    statusCode: number;
 
     @IsString()
     @IsOptional()

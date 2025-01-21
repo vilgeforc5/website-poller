@@ -38,10 +38,11 @@ model Site {
 model Poll {
   id            Int               @id @default(autoincrement())
   siteId        Int
-  statusCode    String
+  statusCode    Int
   retryCount    Int               @default(0)
   requestMethod EnumRequestMethod
   createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
   site          Site              @relation(fields: [siteId], references: [id], onDelete: Cascade)
 }
 

@@ -149,7 +149,7 @@ export class PollerService {
             await this.pollService.createMany(
                 poll.map((data) => ({
                     siteId: sites.find((site) => site.address === data.url).id,
-                    statusCode: data.status.toString(),
+                    statusCode: data.status,
                     retryCount: data.retryCount,
                     requestMethod,
                 })),

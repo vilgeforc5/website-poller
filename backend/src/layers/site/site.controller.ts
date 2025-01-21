@@ -28,4 +28,10 @@ export class SiteController {
     findAll(@GetCurrentUserId() userId: number) {
         return this.siteService.getAll(userId);
     }
+
+    @HttpCode(HttpStatus.OK)
+    @Get("latest-info")
+    countInfo(@GetCurrentUserId() userId: number) {
+        return this.siteService.getLatestInfo(userId);
+    }
 }

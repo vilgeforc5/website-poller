@@ -8,7 +8,7 @@ export class SiteRepository {
 
     getAll(userId: number) {
         return this.prismaService.site.findMany({
-            where: { users: { some: { id: userId } } },
+            where: this.idFilter(userId),
         });
     }
 
@@ -16,7 +16,7 @@ export class SiteRepository {
         return this.prismaService.site.findMany({
             skip,
             take,
-            where: { users: { some: { id: userId } } },
+            where: this.idFilter(userId),
         });
     }
 
@@ -27,5 +27,39 @@ export class SiteRepository {
                 users: { connect: userIds.map((id) => ({ id })) },
             },
         });
+    }
+
+    count(userId: number) {
+        return this.prismaService.site.count({
+            where: { users: { some: { id: userId } } },
+        });
+    }
+
+    getLatestRecord(userId: number) {
+        return this.prismaService.site.findFirst({
+            orderBy: { createdAt: "desc" },
+            where: this.idFilter(userId),
+        });
+    }
+
+    getCountDifference(daysBefore = 1) {
+        const currentDate = new Date();
+        const pastDate = new Date();
+        pastDate.setDate(currentDate.getDate() - daysBefore);
+
+        console.log(currentDate.toISOString());
+
+        return this.prismaService.site.count({
+            where: {
+                createdAt: {
+                    gte: pastDate,
+                    lte: currentDate,
+                },
+            },
+        });
+    }
+
+    private idFilter(userId: number) {
+        return { users: { some: { id: userId } } };
     }
 }
