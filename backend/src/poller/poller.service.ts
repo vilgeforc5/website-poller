@@ -1,8 +1,6 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { PinoLogger } from "nestjs-pino";
 import { SiteService } from "src/layers/site/site.service";
-import { Cron, CronExpression } from "@nestjs/schedule";
-import { StateService } from "src/layers/state/state.service";
 import { ConfigService } from "@nestjs/config";
 import { HttpService } from "@nestjs/axios";
 import {
@@ -18,6 +16,7 @@ import {
 import { EnumRequestMethod } from "@prisma/client";
 import { AxiosResponse } from "axios";
 import { PollService } from "src/layers/poll/poll.service";
+import { PollingTaskService } from "src/layers/polling-task/polling-task.service";
 
 @Injectable()
 export class PollerService {
@@ -30,7 +29,7 @@ export class PollerService {
     constructor(
         private readonly logger: PinoLogger,
         private readonly siteService: SiteService,
-        private readonly stateService: StateService,
+        private readonly pollingTaskService: PollingTaskService,
         private readonly config: ConfigService,
         private readonly httpService: HttpService,
         private readonly pollService: PollService,
@@ -69,6 +68,7 @@ export class PollerService {
                                 concatMap((error, i) => {
                                     if (i < this.config.get("retryCount")) {
                                         retryCount++;
+
                                         return timer(500);
                                     } else {
                                         return throwError(() => error);
@@ -99,37 +99,40 @@ export class PollerService {
         });
     }
 
-    async triggerPoll() {
+    async triggerPoll(userId: number) {
         this.logger.info("triggerPoll");
 
-        const state = await this.stateService.getState();
+        const hasRunningTasks = await this.pollingTaskService.hasRunningTask();
 
-        if (state.pollingState !== "IDLE") {
+        if (hasRunningTasks) {
             this.logger.error(
                 "startPoll: Attempt to poll when already started",
             );
 
-            return;
+            throw new BadRequestException();
         }
 
-        await this.stateService.updatePollingState(true);
-        this.startPoll();
+        const newTask = await this.pollingTaskService.create({
+            triggeredBy: "MANUAL",
+        });
 
-        return;
+        this.poll(userId, newTask.id, newTask.requestMethod);
+
+        return { id: newTask.id };
     }
 
-    @Cron(CronExpression.EVERY_DAY_AT_6AM)
-    private async startPoll() {
+    private async poll(
+        userId: number,
+        pollingTaskId: number,
+        requestMethod: EnumRequestMethod,
+    ) {
         this.logger.info("startPoll");
-        const state = await this.stateService.getState();
 
-        await this.stateService.updatePollingState(true);
-
-        const requestMethod = state.requestMethod;
         const siteProcessCount = this.config.get("siteProcessCount");
 
         while (true) {
             const sites = await this.siteService.getPaginated(
+                userId,
                 this.currentTake,
                 siteProcessCount,
             );
@@ -143,7 +146,7 @@ export class PollerService {
                 requestMethod,
             );
 
-            await this.pollService.createManyBySiteId(
+            await this.pollService.createMany(
                 poll.map((data) => ({
                     siteId: sites.find((site) => site.address === data.url).id,
                     statusCode: data.status.toString(),
@@ -156,8 +159,10 @@ export class PollerService {
         }
 
         this.currentTake = 0;
-        await this.stateService.updatePollingState(false);
-        await this.stateService.updateLastPollTime();
+        await this.pollingTaskService.update(pollingTaskId, {
+            pollingState: "IDLE",
+            endTime: new Date().toISOString(),
+        });
 
         this.logger.info("startPoll: ended");
     }

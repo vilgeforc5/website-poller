@@ -1,48 +1,56 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { CreateSiteDto } from "src/layers/site/dto/create-site.dto";
 import { SiteRepository } from "src/layers/site/site.repository";
 import { PinoLogger } from "nestjs-pino";
+import { UsersService } from "src/layers/users/users.service";
+import { Role } from "@prisma/client";
 
 @Injectable()
 export class SiteService {
     constructor(
         private readonly siteRepository: SiteRepository,
         private readonly logger: PinoLogger,
+        private readonly usersService: UsersService,
     ) {
         this.logger.setContext(SiteService.name);
     }
 
-    create(createSiteDto: CreateSiteDto) {
+    // site is automatically create for Role.Admin users
+    async create(userId: number, createSiteDto: CreateSiteDto) {
         this.logger.info("create: ", createSiteDto);
+        const ids = await this.getIdsWithAdmins(userId);
 
-        return this.siteRepository.create(createSiteDto);
+        return this.siteRepository.create(ids, createSiteDto);
     }
 
-    createMany(createManyDto: CreateSiteDto[]) {
-        return Promise.all(createManyDto.map((site) => this.siteRepository.create(site)));
+    // sites are automatically create for Role.Admin users
+    async createMany(userId: number, createManyDto: CreateSiteDto[]) {
+        this.logger.trace("createMany", userId, createManyDto);
+
+        const ids = await this.getIdsWithAdmins(userId);
+
+        return Promise.all(
+            createManyDto.map((site) => this.siteRepository.create(ids, site)),
+        );
     }
 
-    findAll() {
+    getAll(userId: number) {
         this.logger.trace("findAll");
 
-        return this.siteRepository.getAll();
+        return this.siteRepository.getAll(userId);
     }
 
-    findOne(token: string) {
-        this.logger.trace("findOne");
-
-        return this.siteRepository.findOne(token);
+    async getPaginated(userId: number, skip = 0, take = 5) {
+        return this.siteRepository.getPaginated(userId, skip, take);
     }
 
-    deleteOne(id: string) {
-        this.logger.info("deleteOne: ", id);
+    private async getIdsWithAdmins(id: number) {
+        const admins = await this.usersService.findByRole(Role.ADMIN);
 
-        return this.siteRepository.deleteOne(id);
-    }
+        if (!admins) {
+            throw new InternalServerErrorException();
+        }
 
-    getPaginated(skip = 0, take = 5) {
-        this.logger.info("getPaginated");
-
-        return this.siteRepository.getPaginated(skip, take);
+        return Array.from(new Set(admins.map((user) => user.id).concat(id)));
     }
 }

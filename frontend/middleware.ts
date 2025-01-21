@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { refresh } from "@/app/_lib/refresh";
-import { isTokenValid } from "@/app/_lib/auth";
+import { refresh } from "@/lib/refresh";
+import { isTokenValid } from "@/lib/auth";
 
 export async function middleware(req: NextRequest, res: NextResponse) {
     const url = req.nextUrl.clone();

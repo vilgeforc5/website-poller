@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { refresh } from "@/app/_lib/refresh";
+import { refresh } from "@/lib/refresh";
 
 export async function POST(req: NextApiRequest, res: NextApiResponse) {
     const nowUnix = (+new Date() / 1e3) | 0;

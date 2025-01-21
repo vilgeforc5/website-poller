@@ -5,8 +5,9 @@ import {
     AppShellMain,
     AppShellNavbar,
 } from "@mantine/core";
-import { HeaderContainer } from "@/app/(main)/_components/Header/HeaderContainer";
-import { NavBar } from "@/app/(main)/_components/NavBar/NavBar";
+import { HeaderContainer } from "@/components/Header/HeaderContainer";
+import { NavBar } from "@/components/NavBar/NavBar";
+import styles from "./main.module.scss";
 
 export default function MainLayout({ children }: { children: ReactNode }) {
     return (
@@ -17,7 +18,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
                 breakpoint: "sm",
                 collapsed: { desktop: false, mobile: true },
             }}
-            padding="md"
+            p="sm"
         >
             <AppShellHeader p="md">
                 <HeaderContainer />
@@ -25,9 +26,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
             <AppShellNavbar p="md">
                 <NavBar />
             </AppShellNavbar>
-            <AppShellMain style={{ display: "flex", flexDirection: "column" }}>
-                {children}
-            </AppShellMain>
+            <AppShellMain className={styles.main}>{children}</AppShellMain>
         </AppShell>
     );
 }

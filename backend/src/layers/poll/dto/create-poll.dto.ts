@@ -1,9 +1,9 @@
-import { IsDate, IsEnum, IsOptional, IsString } from "class-validator";
+import { IsEnum, IsInt, IsOptional, IsString } from "class-validator";
 import { $Enums, EnumRequestMethod } from "@prisma/client";
 
 export class CreatePollDto {
-    @IsString()
-    siteId: string;
+    @IsInt()
+    siteId: number;
 
     @IsString()
     statusCode: string;

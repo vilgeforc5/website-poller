@@ -6,21 +6,9 @@ import { CreatePollDto } from "src/layers/poll/dto/create-poll.dto";
 export class PollRepository {
     constructor(private readonly prismaService: PrismaService) {}
 
-    /**
-     *
-     * @param siteId - id or url of site
-     */
-    findBySiteId(siteId: string) {
-        return this.prismaService.poll.findMany({ where: { siteId } });
-    }
-
-    createBySiteId(data: CreatePollDto) {
-        return this.prismaService.poll.create({
+    createMany(data: CreatePollDto[]) {
+        return this.prismaService.poll.createMany({
             data,
         });
-    }
-
-    createManyBySiteId(data: CreatePollDto[]) {
-        return this.prismaService.poll.createMany({ data });
     }
 }

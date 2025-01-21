@@ -12,19 +12,9 @@ export class PollService {
         this.logger.setContext(PollService.name);
     }
 
-    findBySiteId(siteId: string) {
-        return this.pollRepository.findBySiteId(siteId);
-    }
-
-    createBySiteId(dto: CreatePollDto) {
+    createMany(dto: CreatePollDto[]) {
         this.logger.info("createBySiteId: ", dto);
 
-        return this.pollRepository.createBySiteId(dto);
-    }
-
-    createManyBySiteId(dto: CreatePollDto[]) {
-        this.logger.info("createBySiteId: ", dto);
-
-        return this.pollRepository.createManyBySiteId(dto);
+        return this.pollRepository.createMany(dto);
     }
 }

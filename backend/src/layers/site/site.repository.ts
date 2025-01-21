@@ -1,47 +1,31 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateSiteDto } from "src/layers/site/dto/create-site.dto";
-import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class SiteRepository {
-    constructor(
-        private readonly prismaService: PrismaService,
-        private readonly configService: ConfigService,
-    ) {}
+    constructor(private readonly prismaService: PrismaService) {}
 
-    getAll(includePollData = true) {
+    getAll(userId: number) {
         return this.prismaService.site.findMany({
-            include: { pollData: includePollData },
-            orderBy: {
-                createdAt: this.configService.get("siteSort"),
-            },
+            where: { users: { some: { id: userId } } },
         });
     }
 
-    getPaginated(skip = 0, take = 5, includePollData = true) {
+    getPaginated(userId: number, skip = 0, take = 10) {
         return this.prismaService.site.findMany({
             skip,
             take,
-            include: { pollData: includePollData },
-            orderBy: {
-                createdAt: this.configService.get("siteSort"),
+            where: { users: { some: { id: userId } } },
+        });
+    }
+
+    create(userIds: number[], { address }: CreateSiteDto) {
+        return this.prismaService.site.create({
+            data: {
+                address,
+                users: { connect: userIds.map((id) => ({ id })) },
             },
         });
-    }
-
-    create({ address }: CreateSiteDto) {
-        return this.prismaService.site.create({ data: { address } });
-    }
-
-    findOne(token: string, includePollData = true) {
-        return this.prismaService.site.findFirst({
-            where: { OR: [{ id: token }, { address: token }] },
-            include: { pollData: includePollData },
-        });
-    }
-
-    deleteOne(id: string) {
-        return this.prismaService.site.delete({ where: { id } });
     }
 }

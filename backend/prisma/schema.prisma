@@ -13,41 +13,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Site {
-  id        String   @id @default(uuid())
-  address   String   @unique
-  pollData  Poll[]
-  createdAt DateTime @default(now())
-}
-
-model Poll {
-  id            String            @id @default(uuid())
-  siteId        String
-  site          Site              @relation(fields: [siteId], references: [id], onDelete: Cascade)
-  statusCode    String
-  retryCount    Int               @default(0)
-  requestMethod EnumRequestMethod
-  createdAt     DateTime          @default(now())
-}
-
-model OperationState {
-  id            String            @id @default(uuid())
-  pollingState  PollingState
-  requestMethod EnumRequestMethod @default(GET)
-  lastPollTime  DateTime
-}
-
-enum PollingState {
-  IDLE
-  POLLING
-}
-
-enum EnumRequestMethod {
-  GET
-  HEAD
-  PING
-}
-
 model User {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
@@ -56,13 +21,57 @@ model User {
   email    String  @unique
   hash     String
   hashedRt String?
-  role     Role    @default(MANAGER)
+  role     Role    @default(USER)
+  sites    Site[]
 
   @@map("users")
+}
+
+model Site {
+  id        Int      @id @default(autoincrement())
+  address   String   @unique
+  createdAt DateTime @default(now())
+  users     User[]
+  polls     Poll[]
+}
+
+model Poll {
+  id            Int               @id @default(autoincrement())
+  siteId        Int
+  statusCode    String
+  retryCount    Int               @default(0)
+  requestMethod EnumRequestMethod
+  createdAt     DateTime          @default(now())
+  site          Site              @relation(fields: [siteId], references: [id], onDelete: Cascade)
+}
+
+model PollingTask {
+  id            Int               @id @default(autoincrement())
+  requestMethod EnumRequestMethod @default(GET)
+  pollingState  PollingState      @default(RUNNING)
+  startTime     DateTime          @default(now())
+  triggeredBy   PollTrigger
+  endTime       DateTime?
+}
+
+enum PollTrigger {
+  MANUAL
+  SCHEDULE
+}
+
+enum PollingState {
+  IDLE
+  RUNNING
+}
+
+enum EnumRequestMethod {
+  GET
+  HEAD
+  PING
 }
 
 enum Role {
   OWNER
   ADMIN
-  MANAGER
+  USER
 }

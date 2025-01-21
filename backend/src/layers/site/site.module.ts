@@ -3,20 +3,10 @@ import { SiteService } from "src/layers/site/site.service";
 import { SiteController } from "src/layers/site/site.controller";
 import { SiteRepository } from "src/layers/site/site.repository";
 import { PrismaService } from "src/prisma/prisma.service";
-import { ConfigModule } from "@nestjs/config";
-
-interface SiteModuleConfig {
-    siteSort: "asc" | "desc";
-}
+import { UsersModule } from "src/layers/users/users.module";
 
 @Module({
-    imports: [
-        ConfigModule.forFeature(
-            (): SiteModuleConfig => ({
-                siteSort: "desc",
-            }),
-        ),
-    ],
+    imports: [UsersModule],
     controllers: [SiteController],
     providers: [SiteService, SiteRepository, PrismaService],
     exports: [SiteService],
