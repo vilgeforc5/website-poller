@@ -12,8 +12,6 @@ import { PollerService } from "src/poller/poller.service";
 export class PollerController {
     constructor(private readonly pollerService: PollerService) {}
 
-    // @Roles(["OWNER"])
-    // @UseGuards(RoleGuard)
     @Post("/trigger-poll")
     @HttpCode(HttpStatus.OK)
     triggerPoll() {

@@ -12,7 +12,7 @@ async function bootstrap() {
             transform: true,
         }),
     );
-    await app.get(StateService).updatePollingState(false);
+    //await app.get(StateService).updatePollingState(false);
     await app.listen(process.env.PORT ?? 3000);
 }
 
