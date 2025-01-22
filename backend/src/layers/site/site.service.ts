@@ -15,22 +15,17 @@ export class SiteService {
         this.logger.setContext(SiteService.name);
     }
 
-    // site is automatically create for Role.Admin users
     async create(userId: number, createSiteDto: CreateSiteDto) {
         this.logger.info("create: ", createSiteDto);
-        const ids = await this.getIdsWithAdmins(userId);
 
-        return this.siteRepository.create(ids, createSiteDto);
+        return this.siteRepository.create(userId, createSiteDto);
     }
 
-    // sites are automatically create for Role.Admin users
     async createMany(userId: number, createManyDto: CreateSiteDto[]) {
         this.logger.trace("createMany", userId, createManyDto);
 
-        const ids = await this.getIdsWithAdmins(userId);
-
         return Promise.all(
-            createManyDto.map((site) => this.siteRepository.create(ids, site)),
+            createManyDto.map((site) => this.create(userId, site)),
         );
     }
 

@@ -11,10 +11,17 @@ export class PollingTaskRepository {
         return this.prismaService.pollingTask.create({ data: dto });
     }
 
-    update(id: number, dto: UpdatePollingTaskDto) {
+    update(id: number, { polls, ...data }: UpdatePollingTaskDto) {
         return this.prismaService.pollingTask.update({
             where: { id },
-            data: dto,
+            data: {
+                ...data,
+                polls: {
+                    createMany: {
+                        data: polls,
+                    },
+                },
+            },
         });
     }
 

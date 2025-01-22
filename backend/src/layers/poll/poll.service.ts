@@ -17,4 +17,17 @@ export class PollService {
 
         return this.pollRepository.createMany(dto);
     }
+
+    async getLatestInfo() {
+        const totalCount = await this.pollRepository.getTotalPollCount();
+        const todayPositive =
+            await this.pollRepository.getPositiveCodePollCount();
+
+        return {
+            todayPositivePercent:
+                totalCount > 0 ? (todayPositive / totalCount) * 100 : 0,
+            difference:
+                await this.pollRepository.getDailyPositiveStatusPercent(),
+        };
+    }
 }

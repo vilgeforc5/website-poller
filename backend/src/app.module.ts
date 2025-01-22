@@ -6,9 +6,11 @@ import { ConfigModule } from "@nestjs/config";
 import { AuthModule } from "src/auth/auth.module";
 import { AtGuard } from "src/common/guards/at.guard";
 import { APP_GUARD } from "@nestjs/core";
-import { PollerModule } from "./poller/poller.module";
+import { PollerModule } from "./workers/poller/poller.module";
 import { ScheduleModule } from "@nestjs/schedule";
 import { PollingTaskModule } from "./layers/polling-task/polling-task.module";
+import { DataSourceTableModule } from "./layers/data-source-table/data-source-table.module";
+import { DataSourceTableParserModule } from "./workers/data-source-table-parser/data-source-table-parser.module";
 
 @Module({
     imports: [
@@ -20,6 +22,8 @@ import { PollingTaskModule } from "./layers/polling-task/polling-task.module";
         AuthModule,
         PollerModule,
         PollingTaskModule,
+        DataSourceTableModule,
+        DataSourceTableParserModule,
     ],
     providers: [
         {

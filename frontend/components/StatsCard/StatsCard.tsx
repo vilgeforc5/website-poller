@@ -47,7 +47,7 @@ const StatsCard = ({ data, ...others }: StatsCardProps) => {
                         fw={500}
                         className={classes.diff}
                     >
-                        <span>{diff}</span>
+                        <span>{diff.toFixed(2)}</span>
                         <DiffIcon size="1rem" stroke={1.5} />
                     </Text>
                 )}

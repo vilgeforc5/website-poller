@@ -7,7 +7,7 @@ interface ISiteInfo {
     createdAt: Date;
 }
 
-export const SiteInfoCard = async () => {
+export const SiteCard = async () => {
     const latestInfo = await serverFetch<ISiteInfo>("/site/latest-info");
     const changeDate = new Date(latestInfo.createdAt);
 

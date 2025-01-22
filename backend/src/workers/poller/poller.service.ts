@@ -15,7 +15,6 @@ import {
 } from "rxjs";
 import { EnumRequestMethod } from "@prisma/client";
 import { AxiosResponse } from "axios";
-import { PollService } from "src/layers/poll/poll.service";
 import { PollingTaskService } from "src/layers/polling-task/polling-task.service";
 
 @Injectable()
@@ -32,7 +31,6 @@ export class PollerService {
         private readonly pollingTaskService: PollingTaskService,
         private readonly config: ConfigService,
         private readonly httpService: HttpService,
-        private readonly pollService: PollService,
     ) {
         logger.setContext(PollerService.name);
     }
@@ -99,7 +97,7 @@ export class PollerService {
         });
     }
 
-    async triggerPoll(userId: number) {
+    async triggerManualPoll(userId: number) {
         this.logger.info("triggerPoll");
 
         const hasRunningTasks = await this.pollingTaskService.hasRunningTask();
@@ -113,15 +111,15 @@ export class PollerService {
         }
 
         const newTask = await this.pollingTaskService.create({
-            triggeredBy: "MANUAL",
+            updateTrigger: "MANUAL",
         });
 
-        this.poll(userId, newTask.id, newTask.requestMethod);
+        this.startPoll(userId, newTask.id, newTask.requestMethod);
 
         return { id: newTask.id };
     }
 
-    private async poll(
+    private async startPoll(
         userId: number,
         pollingTaskId: number,
         requestMethod: EnumRequestMethod,
@@ -146,14 +144,15 @@ export class PollerService {
                 requestMethod,
             );
 
-            await this.pollService.createMany(
-                poll.map((data) => ({
-                    siteId: sites.find((site) => site.address === data.url).id,
-                    statusCode: data.status,
-                    retryCount: data.retryCount,
-                    requestMethod,
-                })),
-            );
+            const polls = poll.map((data) => ({
+                siteId: sites.find((site) => site.address === data.url).id,
+                statusCode: data.status,
+                retryCount: data.retryCount,
+                requestMethod,
+                pollingTaskId,
+            }));
+
+            await this.pollingTaskService.update(pollingTaskId, { polls });
 
             this.currentTake += sites.length;
         }

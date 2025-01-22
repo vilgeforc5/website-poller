@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 const linkStyles: NavLinkProps = { style: { cursor: "pointer" } };
 
 const routes = [
-    { href: "/", label: "Главная" },
+    { href: "/dashboard", label: "Главная" },
     { href: "/settings", label: "Настройки" },
 ];
 

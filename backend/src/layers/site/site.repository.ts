@@ -20,11 +20,12 @@ export class SiteRepository {
         });
     }
 
-    create(userIds: number[], { address }: CreateSiteDto) {
+    create(userId: number, { dataSourceTableId, ...other }: CreateSiteDto) {
         return this.prismaService.site.create({
             data: {
-                address,
-                users: { connect: userIds.map((id) => ({ id })) },
+                ...other,
+                users: { connect: { id: userId } },
+                dataSourceTable: { connect: { id: dataSourceTableId } },
             },
         });
     }

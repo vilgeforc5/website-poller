@@ -5,6 +5,9 @@ export class CreatePollDto {
     @IsInt()
     siteId: number;
 
+    @IsInt()
+    pollingTaskId: number;
+
     @IsString()
     statusCode: number;
 

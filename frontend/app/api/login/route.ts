@@ -9,7 +9,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
     try {
         const body = await req.json();
         const response = await fetch(
-            process.env.BASE_API_URL + "/auth/signup",
+            process.env.BASE_API_URL + "/auth/signin",
             {
                 body: JSON.stringify(body),
                 method: "POST",

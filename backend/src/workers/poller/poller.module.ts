@@ -1,10 +1,9 @@
 import { Module } from "@nestjs/common";
-import { PollerService } from "./poller.service";
+import { PollerService } from "src/workers/poller/poller.service";
 import { SiteModule } from "src/layers/site/site.module";
-import { PollModule } from "src/layers/poll/poll.module";
 import { ConfigModule } from "@nestjs/config";
 import { HttpModule } from "@nestjs/axios";
-import { PollerController } from "src/poller/poller.controller";
+import { PollerController } from "src/workers/poller/poller.controller";
 import { PollingTaskModule } from "src/layers/polling-task/polling-task.module";
 
 interface PollerModuleConfig {
@@ -21,7 +20,6 @@ interface PollerModuleConfig {
             }),
         ),
         SiteModule,
-        PollModule,
         PollingTaskModule,
         HttpModule.register({}),
     ],

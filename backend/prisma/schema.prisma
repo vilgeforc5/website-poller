@@ -14,25 +14,26 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  email    String  @unique
-  hash     String
-  hashedRt String?
-  role     Role    @default(USER)
-  sites    Site[]
+  id               Int               @id @default(autoincrement())
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  email            String            @unique
+  hash             String
+  hashedRt         String?
+  role             Role              @default(USER)
+  sites            Site[]
+  dataSourceTables DataSourceTable[]
 
   @@map("users")
 }
 
 model Site {
-  id        Int      @id @default(autoincrement())
-  address   String   @unique
-  createdAt DateTime @default(now())
-  users     User[]
-  polls     Poll[]
+  id              Int               @id @default(autoincrement())
+  address         String            @unique
+  createdAt       DateTime          @default(now())
+  users           User[]
+  polls           Poll[]
+  dataSourceTable DataSourceTable[]
 }
 
 model Poll {
@@ -41,9 +42,11 @@ model Poll {
   statusCode    Int
   retryCount    Int               @default(0)
   requestMethod EnumRequestMethod
+  pollingTaskId Int
+  site          Site              @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  pollingTask   PollingTask       @relation(fields: [pollingTaskId], references: [id], onDelete: Cascade)
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
-  site          Site              @relation(fields: [siteId], references: [id], onDelete: Cascade)
 }
 
 model PollingTask {
@@ -51,11 +54,27 @@ model PollingTask {
   requestMethod EnumRequestMethod @default(GET)
   pollingState  PollingState      @default(RUNNING)
   startTime     DateTime          @default(now())
-  triggeredBy   PollTrigger
+  updateTrigger UpdateTrigger
   endTime       DateTime?
+  polls         Poll[]
 }
 
-enum PollTrigger {
+model DataSourceTable {
+  id            Int                     @id @default(autoincrement())
+  url           String                  @unique
+  provider      DataSourceTableProvider @default(GOOGLE)
+  updateTrigger UpdateTrigger?
+  users         User[]
+  createdAt     DateTime                @default(now())
+  lastFetched   DateTime                @default(now())
+  sites         Site[]
+}
+
+enum DataSourceTableProvider {
+  GOOGLE
+}
+
+enum UpdateTrigger {
   MANUAL
   SCHEDULE
 }

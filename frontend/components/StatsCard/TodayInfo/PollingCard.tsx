@@ -6,7 +6,7 @@ interface IPollingInfo {
     lastDate?: Date;
 }
 
-export const PollingInfoCard = async () => {
+export const PollingCard = async () => {
     const result = await serverFetch<IPollingInfo>("/polling-task/latest-info");
     const changeDate = new Date(result?.lastDate || "");
 

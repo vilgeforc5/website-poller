@@ -6,7 +6,7 @@ import {
     Post,
     UseGuards,
 } from "@nestjs/common";
-import { PollerService } from "src/poller/poller.service";
+import { PollerService } from "src/workers/poller/poller.service";
 import { RoleGuard } from "src/common/guards/role.guard";
 import { Roles } from "src/common/decorators/Roles";
 import { GetCurrentUserId } from "src/common/decorators/GetCurrentUserId";
@@ -21,6 +21,6 @@ export class PollerController {
     @UseGuards(RoleGuard)
     @HttpCode(HttpStatus.OK)
     trigger(@GetCurrentUserId() id: number) {
-        return this.pollerService.triggerPoll(id);
+        return this.pollerService.triggerManualPoll(id);
     }
 }
