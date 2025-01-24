@@ -1,103 +1,21 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { PinoLogger } from "nestjs-pino";
-import { SiteService } from "src/layers/site/site.service";
-import { ConfigService } from "@nestjs/config";
-import { HttpService } from "@nestjs/axios";
-import {
-    catchError,
-    concatMap,
-    forkJoin,
-    map,
-    of,
-    retryWhen,
-    throwError,
-    timer,
-} from "rxjs";
-import { EnumRequestMethod } from "@prisma/client";
-import { AxiosResponse } from "axios";
+import { PollerWorker } from "src/workers/poller/poller-worker/poller.worker";
 import { PollingTaskService } from "src/layers/polling-task/polling-task.service";
+import { TriggerManualPollDto } from "src/workers/poller/dto/trigger-manual.dto";
+import { EnumRequestMethod } from "@prisma/client";
 
 @Injectable()
 export class PollerService {
-    private currentTake = 0;
-    private static okResponseRange = Array.from(
-        { length: 100 },
-        (_, i) => 200 + i,
-    );
-
     constructor(
         private readonly logger: PinoLogger,
-        private readonly siteService: SiteService,
         private readonly pollingTaskService: PollingTaskService,
-        private readonly config: ConfigService,
-        private readonly httpService: HttpService,
+        private readonly worker: PollerWorker,
     ) {
         logger.setContext(PollerService.name);
     }
 
-    private pollWebsites(
-        addressList: string[],
-        method: EnumRequestMethod = "HEAD",
-    ): Promise<
-        Array<{ ok: boolean; status: number; url: string; retryCount: number }>
-    > {
-        const axiosMethodMap: Record<EnumRequestMethod, string> = {
-            GET: "get",
-            HEAD: "head",
-            // TODO implement ping method
-            PING: "head",
-        };
-
-        const handleRequest = (url: string) => {
-            let retryCount = 0;
-
-            return new Promise(async (resolve) => {
-                this.httpService[axiosMethodMap[method]](url)
-                    .pipe(
-                        map((response: AxiosResponse) => ({
-                            url,
-                            status: response.status,
-                            ok: PollerService.okResponseRange.includes(
-                                response.status,
-                            ),
-                        })),
-                        retryWhen((errors) =>
-                            errors.pipe(
-                                concatMap((error, i) => {
-                                    if (i < this.config.get("retryCount")) {
-                                        retryCount++;
-
-                                        return timer(500);
-                                    } else {
-                                        return throwError(() => error);
-                                    }
-                                }),
-                            ),
-                        ),
-                        catchError((error) => {
-                            const status = error.response
-                                ? error.response?.status
-                                : 500;
-
-                            return of({ url, status, ok: false });
-                        }),
-                    )
-                    .subscribe({
-                        next: (value) => resolve({ ...value, retryCount }),
-                    });
-            });
-        };
-
-        return new Promise((resolve) => {
-            forkJoin(addressList.map((url) => handleRequest(url))).subscribe(
-                (result: any) => {
-                    resolve(result);
-                },
-            );
-        });
-    }
-
-    async triggerManualPoll(userId: number) {
+    async triggerManual(userId: number, dto: TriggerManualPollDto) {
         this.logger.info("triggerPoll");
 
         const hasRunningTasks = await this.pollingTaskService.hasRunningTask();
@@ -110,59 +28,41 @@ export class PollerService {
             throw new BadRequestException();
         }
 
-        const newTask = await this.pollingTaskService.create({
+        const task = await this.pollingTaskService.create({
             updateTrigger: "MANUAL",
         });
 
-        this.startPoll(userId, newTask.id, newTask.requestMethod);
+        this.startTask(userId, task.id, dto.method, dto.parallelProcessCount);
 
-        return { id: newTask.id };
+        return { id: task.id };
     }
 
-    private async startPoll(
+    async startTask(
         userId: number,
         pollingTaskId: number,
-        requestMethod: EnumRequestMethod,
+        requestMethod: EnumRequestMethod = "HEAD",
+        parallelProcessCount = 10,
     ) {
-        this.logger.info("startPoll");
-
-        const siteProcessCount = this.config.get("siteProcessCount");
-
-        while (true) {
-            const sites = await this.siteService.getPaginated(
+        try {
+            const result = await this.worker.work({
                 userId,
-                this.currentTake,
-                siteProcessCount,
-            );
+                pollingTaskId,
+                requestMethod,
+                parallelProcessCount,
+            });
 
-            if (sites.length === 0) {
-                break;
+            await this.pollingTaskService.update(pollingTaskId, {
+                pollingState: "IDLE",
+                endTime: new Date().toISOString(),
+            });
+
+            if (!result.ok) {
+                throw new Error(result.message);
             }
 
-            const poll = await this.pollWebsites(
-                sites.map((site) => site.address),
-                requestMethod,
-            );
-
-            const polls = poll.map((data) => ({
-                siteId: sites.find((site) => site.address === data.url).id,
-                statusCode: data.status,
-                retryCount: data.retryCount,
-                requestMethod,
-                pollingTaskId,
-            }));
-
-            await this.pollingTaskService.update(pollingTaskId, { polls });
-
-            this.currentTake += sites.length;
+            this.logger.info("startPoll: ended");
+        } catch (error) {
+            this.logger.error(error);
         }
-
-        this.currentTake = 0;
-        await this.pollingTaskService.update(pollingTaskId, {
-            pollingState: "IDLE",
-            endTime: new Date().toISOString(),
-        });
-
-        this.logger.info("startPoll: ended");
     }
 }

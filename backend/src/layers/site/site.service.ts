@@ -1,16 +1,13 @@
-import { Injectable, InternalServerErrorException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { CreateSiteDto } from "src/layers/site/dto/create-site.dto";
 import { SiteRepository } from "src/layers/site/site.repository";
 import { PinoLogger } from "nestjs-pino";
-import { UsersService } from "src/layers/users/users.service";
-import { Role } from "@prisma/client";
 
 @Injectable()
 export class SiteService {
     constructor(
         private readonly siteRepository: SiteRepository,
         private readonly logger: PinoLogger,
-        private readonly usersService: UsersService,
     ) {
         this.logger.setContext(SiteService.name);
     }
@@ -26,6 +23,35 @@ export class SiteService {
 
         return Promise.all(
             createManyDto.map((site) => this.create(userId, site)),
+        );
+    }
+
+    async upsert(userId: number, createSiteDto: CreateSiteDto) {
+        this.logger.info("upsert: ", createSiteDto);
+        const existed = await this.siteRepository.getByAddress(
+            createSiteDto.address,
+        );
+
+        if (existed) {
+            return {
+                existed: true,
+                data: existed,
+            };
+        } else {
+            const res = await this.siteRepository.create(userId, createSiteDto);
+
+            return {
+                existed: false,
+                data: res,
+            };
+        }
+    }
+
+    async upsertMany(userId: number, createManyDto: CreateSiteDto[]) {
+        this.logger.trace("upsertMany", userId, createManyDto);
+
+        return Promise.all(
+            createManyDto.map((site) => this.upsert(userId, site)),
         );
     }
 
@@ -45,18 +71,5 @@ export class SiteService {
         const diff = await this.siteRepository.getCountDifference(userId);
 
         return { count, createdAt: latestRecord?.createdAt, diff };
-    }
-
-    private async getIdsWithAdmins(id: number) {
-        const admins = await this.usersService.findByRole([
-            Role.ADMIN,
-            Role.OWNER,
-        ]);
-
-        if (!admins) {
-            throw new InternalServerErrorException();
-        }
-
-        return Array.from(new Set(admins.map((user) => user.id).concat(id)));
     }
 }

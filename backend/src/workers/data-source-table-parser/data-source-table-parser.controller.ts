@@ -1,14 +1,5 @@
-import {
-    Controller,
-    HttpCode,
-    HttpStatus,
-    Param,
-    Post,
-    UseGuards,
-} from "@nestjs/common";
-import { Roles } from "src/common/decorators/Roles";
+import { Controller, HttpCode, HttpStatus, Param, Post } from "@nestjs/common";
 import { DataSourceTableParserService } from "src/workers/data-source-table-parser/data-source-table-parser.service";
-import { RoleGuard } from "src/common/guards/role.guard";
 import { GetCurrentUserId } from "src/common/decorators/GetCurrentUserId";
 
 @Controller("data-source-table-parser")
@@ -17,13 +8,11 @@ export class DataSourceTableParserController {
         private readonly dataSourceTableParserService: DataSourceTableParserService,
     ) {}
 
-    @Post("/trigger")
-    @Roles(["ADMIN", "OWNER"])
-    @UseGuards(RoleGuard)
+    @Post("trigger/:dataTableId")
     @HttpCode(HttpStatus.OK)
     remove(
         @GetCurrentUserId() userId: number,
-        @Param("dataTable") tableId: string,
+        @Param("dataTableId") tableId: string,
     ) {
         return this.dataSourceTableParserService.triggerManualParse(
             +userId,

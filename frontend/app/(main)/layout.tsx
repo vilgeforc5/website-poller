@@ -24,6 +24,7 @@ export default function MainLayout({
                 collapsed: { desktop: false, mobile: true },
             }}
             p="sm"
+            className={styles.main}
         >
             <AppShellHeader p="md">
                 <HeaderContainer />
@@ -31,7 +32,7 @@ export default function MainLayout({
             <AppShellNavbar p="md">
                 <NavBar />
             </AppShellNavbar>
-            <AppShellMain className={styles.main}>{children}</AppShellMain>
+            <AppShellMain>{children}</AppShellMain>
         </AppShell>
     );
 }

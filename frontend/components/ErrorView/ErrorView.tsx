@@ -3,7 +3,7 @@ import { Blockquote, Button, Stack, Text } from "@mantine/core";
 export const ErrorView = ({
     error,
     reset,
-    showStack = true,
+    showStack = false,
 }: {
     error: Error & { digest?: string };
     reset: () => void;
@@ -15,7 +15,9 @@ export const ErrorView = ({
         cite="Ошибка сервера"
     >
         <Stack>
-            <Text size="lg"> {error.message}</Text>
+            <Text fw="bolder" size="lg">
+                {error.message}
+            </Text>
             {showStack && (
                 <Text
                     size="md"

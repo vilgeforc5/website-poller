@@ -8,6 +8,7 @@ const linkStyles: NavLinkProps = { style: { cursor: "pointer" } };
 const routes = [
     { href: "/dashboard", label: "Главная" },
     { href: "/settings", label: "Настройки" },
+    { href: "/tables", label: "Таблицы для парсинга" },
 ];
 
 export const NavBar = () => (

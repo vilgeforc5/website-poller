@@ -3,7 +3,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { parseJwt } from "@/lib/auth";
 
-export async function POST(req: NextRequest, res: NextResponse) {
+export async function POST(req: NextRequest) {
     const nowUnix = (+new Date() / 1e3) | 0;
 
     try {

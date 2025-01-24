@@ -1,5 +1,5 @@
 import StatsCard from "@/components/StatsCard/StatsCard";
-import { serverFetch } from "@/lib/api";
+import { serverFetch } from "@/lib/serverFetch";
 
 interface IPollingInfo {
     count: number;
@@ -7,17 +7,24 @@ interface IPollingInfo {
 }
 
 export const PollingCard = async () => {
-    const result = await serverFetch<IPollingInfo>("/polling-task/latest-info");
-    const changeDate = new Date(result?.lastDate || "");
+    const { data } = await serverFetch<IPollingInfo>(
+        "/polling-task/latest-info",
+    );
+    const changeDate = new Date(data?.lastDate || "");
 
     return (
         <StatsCard
+            // data={{
+            //     title: "Количество опросов за сегодня",
+            //     value: data.count.toString(),
+            //     description: !isNaN(changeDate.getTime())
+            //         ? `Последний опрос: ${changeDate.toLocaleString()}`
+            //         : undefined,
+            // }}
             data={{
                 title: "Количество опросов за сегодня",
-                value: result.count.toString(),
-                description: !isNaN(changeDate.getTime())
-                    ? `Последний опрос: ${changeDate.toLocaleString()}`
-                    : undefined,
+                value: "3",
+                description: "Последний опрос: 02:10",
             }}
         />
     );

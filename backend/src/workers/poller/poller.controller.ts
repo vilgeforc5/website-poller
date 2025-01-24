@@ -4,23 +4,23 @@ import {
     HttpStatus,
     Injectable,
     Post,
-    UseGuards,
+    Query,
 } from "@nestjs/common";
 import { PollerService } from "src/workers/poller/poller.service";
-import { RoleGuard } from "src/common/guards/role.guard";
-import { Roles } from "src/common/decorators/Roles";
 import { GetCurrentUserId } from "src/common/decorators/GetCurrentUserId";
+import { TriggerManualPollDto } from "src/workers/poller/dto/trigger-manual.dto";
 
 @Injectable()
 @Controller("poller")
 export class PollerController {
     constructor(private readonly pollerService: PollerService) {}
 
-    @Post("/trigger")
-    @Roles(["ADMIN", "OWNER"])
-    @UseGuards(RoleGuard)
+    @Post("trigger")
     @HttpCode(HttpStatus.OK)
-    trigger(@GetCurrentUserId() id: number) {
-        return this.pollerService.triggerManualPoll(id);
+    trigger(
+        @GetCurrentUserId() id: number,
+        @Query() query?: TriggerManualPollDto,
+    ) {
+        return this.pollerService.triggerManual(id, query);
     }
 }

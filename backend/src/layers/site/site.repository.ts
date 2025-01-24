@@ -20,13 +20,37 @@ export class SiteRepository {
         });
     }
 
-    create(userId: number, { dataSourceTableId, ...other }: CreateSiteDto) {
-        return this.prismaService.site.create({
-            data: {
+    create(
+        userId: number,
+        { dataSourceTableParsingTaskId, ...other }: CreateSiteDto,
+    ) {
+        return this.prismaService.site.upsert({
+            where: { address: other.address },
+            create: {
                 ...other,
                 users: { connect: { id: userId } },
-                dataSourceTable: { connect: { id: dataSourceTableId } },
+                dataSourceTableParse: {
+                    connect: { id: dataSourceTableParsingTaskId },
+                },
             },
+            update: {},
+        });
+    }
+
+    upsert(
+        userId: number,
+        { dataSourceTableParsingTaskId, ...other }: CreateSiteDto,
+    ) {
+        return this.prismaService.site.upsert({
+            where: { address: other.address },
+            create: {
+                ...other,
+                users: { connect: { id: userId } },
+                dataSourceTableParse: {
+                    connect: { id: dataSourceTableParsingTaskId },
+                },
+            },
+            update: {},
         });
     }
 
@@ -58,6 +82,10 @@ export class SiteRepository {
                 },
             },
         });
+    }
+
+    getByAddress(address: string) {
+        return this.prismaService.site.findUnique({ where: { address } });
     }
 
     private idFilter(userId: number) {

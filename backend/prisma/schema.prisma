@@ -28,12 +28,13 @@ model User {
 }
 
 model Site {
-  id              Int               @id @default(autoincrement())
-  address         String            @unique
-  createdAt       DateTime          @default(now())
-  users           User[]
-  polls           Poll[]
-  dataSourceTable DataSourceTable[]
+  id                           Int                        @id @default(autoincrement())
+  address                      String                     @unique
+  createdAt                    DateTime                   @default(now())
+  users                        User[]
+  polls                        Poll[]
+  dataSourceTableParsingTaskId Int
+  dataSourceTableParse         DataSourceTableParsingTask @relation(fields: [dataSourceTableParsingTaskId], references: [id])
 }
 
 model Poll {
@@ -53,21 +54,32 @@ model PollingTask {
   id            Int               @id @default(autoincrement())
   requestMethod EnumRequestMethod @default(GET)
   pollingState  PollingState      @default(RUNNING)
-  startTime     DateTime          @default(now())
   updateTrigger UpdateTrigger
+  startTime     DateTime          @default(now())
   endTime       DateTime?
   polls         Poll[]
+  error         String?
 }
 
 model DataSourceTable {
-  id            Int                     @id @default(autoincrement())
-  url           String                  @unique
-  provider      DataSourceTableProvider @default(GOOGLE)
-  updateTrigger UpdateTrigger?
-  users         User[]
-  createdAt     DateTime                @default(now())
-  lastFetched   DateTime                @default(now())
-  sites         Site[]
+  id                  Int                          @id @default(autoincrement())
+  url                 String                       @unique
+  provider            DataSourceTableProvider      @default(GOOGLE)
+  createdAt           DateTime                     @default(now())
+  parsingTasks        DataSourceTableParsingTask[]
+  googleSpreadSheetId String
+  users               User[]
+}
+
+model DataSourceTableParsingTask {
+  id                Int             @id @default(autoincrement())
+  dataSourceTable   DataSourceTable @relation(fields: [dataSourceTableId], references: [id])
+  dataSourceTableId Int
+  updateTrigger     UpdateTrigger
+  startTime         DateTime        @default(now())
+  endTime           DateTime?
+  addedSites        Site[]
+  error             String?
 }
 
 enum DataSourceTableProvider {

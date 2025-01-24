@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 export const serverFetch = async <T>(
     segment: string,
     init: RequestInit = { headers: {} },
-): Promise<T> => {
+): Promise<{ ok: boolean; data: T }> => {
     const headersList = await cookies();
     const token = headersList.get("token");
 
@@ -16,5 +16,5 @@ export const serverFetch = async <T>(
         },
     });
 
-    return response.json();
+    return { data: (await response.json()) as T, ok: response.ok };
 };

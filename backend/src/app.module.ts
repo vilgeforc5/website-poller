@@ -11,6 +11,7 @@ import { ScheduleModule } from "@nestjs/schedule";
 import { PollingTaskModule } from "./layers/polling-task/polling-task.module";
 import { DataSourceTableModule } from "./layers/data-source-table/data-source-table.module";
 import { DataSourceTableParserModule } from "./workers/data-source-table-parser/data-source-table-parser.module";
+import { DataSourceTableTaskModule } from './layers/data-source-table-task/data-source-table-task.module';
 
 @Module({
     imports: [
@@ -24,6 +25,7 @@ import { DataSourceTableParserModule } from "./workers/data-source-table-parser/
         PollingTaskModule,
         DataSourceTableModule,
         DataSourceTableParserModule,
+        DataSourceTableTaskModule,
     ],
     providers: [
         {

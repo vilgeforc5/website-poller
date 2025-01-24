@@ -27,13 +27,15 @@
     "@tiptap/pm": "^2.11.2",
     "@tiptap/react": "^2.11.2",
     "@tiptap/starter-kit": "^2.11.2",
+    "axios": "^1.7.9",
     "dayjs": "^1.11.13",
     "embla-carousel-react": "^7.1.0",
     "next": "15.1.5",
     "react": "^19.0.0",
     "react-apexcharts": "^1.7.0",
     "react-dom": "^19.0.0",
-    "sass": "^1.83.4"
+    "sass": "^1.83.4",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

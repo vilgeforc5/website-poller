@@ -7,9 +7,12 @@ import { UpdateDataSourceTableDto } from "src/layers/data-source-table/dto/updat
 export class DataSourceTableRepository {
     constructor(private readonly prismaService: PrismaService) {}
 
-    create({ userId, ...other }: CreateDataSourceTableDto) {
+    create(
+        userId: number,
+        data: CreateDataSourceTableDto & { googleSpreadSheetId: string },
+    ) {
         return this.prismaService.dataSourceTable.create({
-            data: { ...other, users: { connect: { id: userId } } },
+            data: { ...data, users: { connect: { id: userId } } },
         });
     }
 
@@ -22,7 +25,37 @@ export class DataSourceTableRepository {
 
     getAll(userId: number) {
         return this.prismaService.dataSourceTable.findMany({
-            where: { users: this.getCommonUserIdFilter(userId) },
+            where: {
+                users: this.getCommonUserIdFilter(userId),
+            },
+        });
+    }
+
+    getInfo(userId: number) {
+        return this.prismaService.dataSourceTable.findMany({
+            where: {
+                users: this.getCommonUserIdFilter(userId),
+            },
+            include: {
+                users: {
+                    select: {
+                        email: true,
+                        role: true,
+                    },
+                },
+                parsingTasks: {
+                    orderBy: { startTime: "desc" },
+                    select: {
+                        startTime: true,
+                        addedSites: {
+                            select: {
+                                address: true,
+                            },
+                        },
+                    },
+                },
+            },
+            orderBy: { createdAt: "desc" },
         });
     }
 

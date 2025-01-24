@@ -10,12 +10,26 @@ export class DataSourceTableController {
     ) {}
 
     @Post()
-    create(@Body() createDataSourceTableDto: CreateDataSourceTableDto) {
-        return this.dataSourceTableService.create(createDataSourceTableDto);
+    create(
+        @GetCurrentUserId() id: number,
+        @Body() createDataSourceTableDto: CreateDataSourceTableDto,
+    ) {
+        return this.dataSourceTableService.create(id, createDataSourceTableDto);
     }
 
-    @Get()
-    getAll(@GetCurrentUserId() userId: number) {
-        return this.dataSourceTableService.getAll(userId);
+    @Post("createMany")
+    createMany(
+        @GetCurrentUserId() id: number,
+        @Body() createDataSourceTableDto: CreateDataSourceTableDto[],
+    ) {
+        return this.dataSourceTableService.createMany(
+            id,
+            createDataSourceTableDto,
+        );
+    }
+
+    @Get("info")
+    getInfo(@GetCurrentUserId() userId: number) {
+        return this.dataSourceTableService.getInfo(userId);
     }
 }

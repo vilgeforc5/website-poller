@@ -8,7 +8,7 @@ export const HeaderTitle = () => (
         variant="gradient"
         gradient={{ from: "blue", to: "cyan", deg: 90 }}
         component={Link}
-        href={"/"}
+        href={"/dashboard"}
     >
         Anubis | Poller
     </Text>

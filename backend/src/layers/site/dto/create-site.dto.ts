@@ -6,5 +6,5 @@ export class CreateSiteDto {
 
     @IsOptional()
     @IsNumber()
-    dataSourceTableId?: number;
+    dataSourceTableParsingTaskId?: number;
 }
