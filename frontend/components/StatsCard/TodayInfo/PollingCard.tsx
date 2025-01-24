@@ -10,13 +10,14 @@ export const PollingCard = async () => {
 
     return (
         <StatsCard
-            data={{
-                title: "Количество опросов за сегодня",
-                value: data.count,
-                description: lastTime
+            title="Опросов сайтов"
+            period="За сегодня"
+            value={data.count}
+            description={
+                lastTime
                     ? `Последний опрос: ${new Date(lastTime).toLocaleDateString()}`
-                    : undefined,
-            }}
+                    : undefined
+            }
         />
     );
 };

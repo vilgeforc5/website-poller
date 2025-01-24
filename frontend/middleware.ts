@@ -45,8 +45,6 @@ export async function middleware(req: NextRequest, res: NextResponse) {
             tokenIsValid = true;
         }
 
-        console.log({ tokenIsValid, url: pathName });
-
         return tokenIsValid ? newResponse : NextResponse.redirect(url);
     } catch (error) {
         const baseUrl = req.nextUrl.clone();

@@ -79,10 +79,9 @@ export class DataSourceTableService {
                     const taskStartTime = task.startTime;
 
                     return {
-                        startTime: taskStartTime
-                            ? taskStartTime.toString()
-                            : null,
+                        startTime: taskStartTime.toString(),
                         addedSites: task.addedSites.map((site) => site.address),
+                        id: task.id,
                     };
                 }),
             };

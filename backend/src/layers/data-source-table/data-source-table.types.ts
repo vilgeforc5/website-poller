@@ -3,5 +3,5 @@ export interface IDataSourceTableInfo {
     createdAt: string;
     lastPolled: string | null;
     users: string[];
-    parsingTasks: { startTime: string | null; addedSites: string[] }[];
+    parsingTasks: { startTime: string; addedSites: string[]; id: number }[];
 }

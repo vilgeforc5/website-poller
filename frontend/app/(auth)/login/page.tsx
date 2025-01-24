@@ -1,5 +1,5 @@
 import { Flex, Title } from "@mantine/core";
-import { LoginForm } from "@/app/(auth)/login/form";
+import { LoginForm } from "@/components/Forms/LoginForm";
 
 export default function Login() {
     return (

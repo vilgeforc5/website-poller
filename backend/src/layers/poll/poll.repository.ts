@@ -10,13 +10,18 @@ export class PollRepository {
         this.poll = prismaService.poll;
     }
 
-    getCount() {
-        return this.poll.count();
-    }
-
-    getPositiveCodePollCount(from?: Date, to?: Date) {
+    getCount(userId: number) {
         return this.poll.count({
             where: {
+                ...this.siteForUserFiler(userId),
+            },
+        });
+    }
+
+    getPositiveCodePollCount(userId: number, from?: Date, to?: Date) {
+        return this.poll.count({
+            where: {
+                ...this.siteForUserFiler(userId),
                 statusCode: {
                     gte: 200,
                     lte: 299,
@@ -29,9 +34,10 @@ export class PollRepository {
         });
     }
 
-    getTotalPollCount(from?: Date, to?: Date) {
+    getTotalPollCount(userId: number, from?: Date, to?: Date) {
         return this.poll.count({
             where: {
+                ...this.siteForUserFiler(userId),
                 createdAt: {
                     gte: from,
                     lte: to,
@@ -40,7 +46,7 @@ export class PollRepository {
         });
     }
 
-    async getDailyPositiveStatusPercent() {
+    async getDailyPositiveStatusPercent(userId: number) {
         const todayStart = new Date();
         todayStart.setHours(0, 0, 0, 0);
 
@@ -59,10 +65,10 @@ export class PollRepository {
             totalPollsYesterday,
             positivePollsYesterday,
         ] = await this.prismaService.$transaction([
-            this.getTotalPollCount(todayStart, todayEnd),
-            this.getPositiveCodePollCount(todayStart, todayEnd),
-            this.getTotalPollCount(yesterdayStart, yesterdayEnd),
-            this.getPositiveCodePollCount(yesterdayStart, yesterdayEnd),
+            this.getTotalPollCount(userId, todayStart, todayEnd),
+            this.getPositiveCodePollCount(userId, todayStart, todayEnd),
+            this.getTotalPollCount(userId, yesterdayStart, yesterdayEnd),
+            this.getPositiveCodePollCount(userId, yesterdayStart, yesterdayEnd),
         ]);
 
         const percentPositiveToday =
@@ -76,5 +82,17 @@ export class PollRepository {
                 : 0;
 
         return percentPositiveToday - percentPositiveYesterday;
+    }
+
+    private siteForUserFiler(userId: number) {
+        return {
+            site: {
+                users: {
+                    some: {
+                        id: userId,
+                    },
+                },
+            },
+        };
     }
 }

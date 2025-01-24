@@ -12,16 +12,16 @@ export class PollService {
         this.logger.setContext(PollService.name);
     }
 
-    async getLatestInfo(): Promise<IPollLatestInfo> {
-        const totalCount = await this.pollRepository.getCount();
+    async getLatestInfo(userId: number): Promise<IPollLatestInfo> {
+        const totalCount = await this.pollRepository.getCount(userId);
         const todayPositive =
-            await this.pollRepository.getPositiveCodePollCount();
+            await this.pollRepository.getPositiveCodePollCount(userId);
 
         return {
             positiveCodePercent:
                 totalCount > 0 ? (todayPositive / totalCount) * 100 : 0,
             diffFromYesterday:
-                await this.pollRepository.getDailyPositiveStatusPercent(),
+                await this.pollRepository.getDailyPositiveStatusPercent(userId),
         };
     }
 }

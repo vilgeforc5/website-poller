@@ -8,14 +8,15 @@ export const SiteCard = async () => {
 
     return (
         <StatsCard
-            data={{
-                title: "Всего сайтов",
-                value: data.count,
-                diff: data.diffFromYesterday,
-                description: lastCreatedTime
+            title="Сайты"
+            period="За все время"
+            description={
+                lastCreatedTime
                     ? `Последнее изменение: ${new Date(lastCreatedTime).toLocaleString()}`
-                    : undefined,
-            }}
+                    : undefined
+            }
+            diff={data.diffFromYesterday}
+            value={data.count}
         />
     );
 };

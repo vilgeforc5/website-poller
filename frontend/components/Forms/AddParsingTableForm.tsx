@@ -1,18 +1,18 @@
 "use client";
-import { Badge, Button, Group, Stack, TextInput } from "@mantine/core";
+import { Badge, Button, Group, Paper, Stack, TextInput } from "@mantine/core";
 import { FormEvent, useRef, useState } from "react";
 import { IconPlus } from "@tabler/icons-react";
 import zod from "zod";
 import { getHotkeyHandler } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 
-interface IAddDataSourceTableFormProps {
-    onSubmit: (data: string[]) => Promise<boolean>;
+interface IAddParsingTableFormProps {
+    onSubmitAction: (data: string[]) => Promise<boolean>;
 }
 
-export const SiteSourceTableForm = ({
-    onSubmit,
-}: IAddDataSourceTableFormProps) => {
+export const AddParsingTableForm = ({
+    onSubmitAction,
+}: IAddParsingTableFormProps) => {
     const [newUrls, setNewUrls] = useState<string[]>([]);
     const [error, setError] = useState("");
     const [isDisabled, setIsDisabled] = useState(false);
@@ -39,7 +39,7 @@ export const SiteSourceTableForm = ({
         e.preventDefault();
         setIsDisabled(true);
 
-        const ok = await onSubmit(newUrls);
+        const ok = await onSubmitAction(newUrls);
 
         const notificationInfo = ok
             ? {
@@ -57,15 +57,23 @@ export const SiteSourceTableForm = ({
     };
 
     return (
-        <Stack justify="start" style={{ maxWidth: "400px", marginTop: "1rem" }}>
+        <Paper
+            shadow="sm"
+            p="sm"
+            radius="sm"
+            component={Stack}
+            justify="start"
+            style={{ maxWidth: "400px", marginTop: "1rem" }}
+        >
             <form onSubmit={onSubmitHandler}>
                 <TextInput
                     mb="md"
                     ref={baseInputRef}
                     error={error}
-                    label="Пример адреса"
-                    description="Добавьте новый по кнопке справа или Enter"
-                    placeholder="https://google.excel.com/"
+                    size="md"
+                    label="Добавить Google таблицу"
+                    description="По кнопке справа или нажатию Enter"
+                    placeholder="https://docs.google.com/spreadsheets/"
                     rightSection={
                         <IconPlus
                             size={24}
@@ -93,12 +101,13 @@ export const SiteSourceTableForm = ({
                 <Group justify="flex-start" mt="md">
                     <Button
                         type="submit"
+                        size="md"
                         disabled={newUrls.length === 0 || isDisabled}
                     >
                         Загрузить
                     </Button>
                 </Group>
             </form>
-        </Stack>
+        </Paper>
     );
 };

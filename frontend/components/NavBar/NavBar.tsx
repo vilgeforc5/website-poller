@@ -2,14 +2,9 @@
 import { NavLink, NavLinkProps } from "@mantine/core";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { routes } from "@/utils/route";
 
 const linkStyles: NavLinkProps = { style: { cursor: "pointer" } };
-
-const routes = [
-    { href: "/dashboard", label: "Главная" },
-    { href: "/settings", label: "Настройки" },
-    { href: "/tables", label: "Таблицы для парсинга" },
-];
 
 export const NavBar = () => (
     <>

@@ -1,5 +1,6 @@
 import StatsCard from "../StatsCard";
 import { serverFetch } from "@/lib/serverFetch";
+import { routeLinks } from "@/utils/route";
 import { IDataSourceTableTaskLatestInfo } from "backend/src/layers/data-source-table-task/data-source-table-task.types";
 
 export const ParsingCard = async () => {
@@ -11,13 +12,15 @@ export const ParsingCard = async () => {
 
     return (
         <StatsCard
-            data={{
-                title: "Количество парсингов таблиц за сегодня",
-                value: count,
-                description: lastTaskTime
+            title="Парсингов таблиц"
+            period="За сегодня"
+            value={count}
+            description={
+                lastTaskTime
                     ? `Последний парсинг: ${new Date(lastTaskTime).toLocaleString()}`
-                    : undefined,
-            }}
+                    : undefined
+            }
+            link={routeLinks.tables}
         />
     );
 };

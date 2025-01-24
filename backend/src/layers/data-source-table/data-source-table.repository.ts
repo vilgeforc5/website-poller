@@ -40,6 +40,7 @@ export class DataSourceTableRepository {
                                 address: true,
                             },
                         },
+                        id: true,
                     },
                 },
             },
