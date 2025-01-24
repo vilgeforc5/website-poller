@@ -36,4 +36,18 @@ export class DataSourceTableTaskService {
     getAll(userId: number) {
         return this.dataSourceTableTaskRepository.getAll(userId);
     }
+
+    async getLatestInfo(userId: number) {
+        const lastTaskTime =
+            await this.dataSourceTableTaskRepository.getLastTaskTime(userId);
+        const count =
+            await this.dataSourceTableTaskRepository.getNumberOfTasksToday(
+                userId,
+            );
+
+        return {
+            lastTaskTime,
+            count,
+        };
+    }
 }

@@ -44,8 +44,6 @@ export default async function TablesPage() {
         return ok;
     };
 
-    console.log(tables);
-
     return (
         <Stack>
             <Title>Таблицы для парсинга</Title>

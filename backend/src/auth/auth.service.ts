@@ -7,6 +7,7 @@ import { Tokens } from "src/auth/types/tokens.type";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { JwtPayload } from "src/auth/types/jwtPayload.type";
 import { UsersService } from "src/layers/users/users.service";
+import { SignUpDto } from "src/auth/dto/signUp.dto";
 
 @Injectable()
 export class AuthService {
@@ -16,7 +17,13 @@ export class AuthService {
         private readonly usersService: UsersService,
     ) {}
 
-    async signUp(dto: AuthDto): Promise<Tokens> {
+    async signUp(dto: SignUpDto): Promise<Tokens> {
+        // used to restrict outer users from registration
+        const keyMatch = dto.signUpKey === this.config.get("SIGN_UP_KEY");
+        if (!keyMatch) {
+            throw new ForbiddenException();
+        }
+
         const hash = await argon.hash(dto.password);
 
         const user = await this.usersService

@@ -25,10 +25,6 @@ export class PollingTaskService {
         return this.pollingRepository.update(id, updatePollingTaskDto);
     }
 
-    get(id: number) {
-        return this.pollingRepository.get(id);
-    }
-
     async hasRunningTask() {
         const runningTasks = await this.pollingRepository.getAllRunningTasks();
 

@@ -11,17 +11,10 @@ export const PollsCard = async () => {
 
     return (
         <StatsCard
-            // data={{
-            //     title: "Процент позитивных статус кодов",
-            //     value: `${data.todayPositivePercent.toFixed(2)}%`,
-            //     diff: data.difference,
-            //     description: "За сегодня",
-            // }}
-
             data={{
                 title: "Процент позитивных статус кодов",
-                value: `${90}%`,
-                diff: 90,
+                value: `${data.todayPositivePercent.toFixed(2)}%`,
+                diff: data.difference,
                 description: "За сегодня",
             }}
         />

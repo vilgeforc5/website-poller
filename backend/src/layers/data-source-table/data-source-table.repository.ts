@@ -1,38 +1,27 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateDataSourceTableDto } from "src/layers/data-source-table/dto/create-data-source-table.dto";
-import { UpdateDataSourceTableDto } from "src/layers/data-source-table/dto/update-data-source-table.dto";
+import { PrismaClient } from "@prisma/client";
 
 @Injectable()
 export class DataSourceTableRepository {
-    constructor(private readonly prismaService: PrismaService) {}
+    private readonly dataSourceTable: PrismaClient["dataSourceTable"];
+
+    constructor(prismaService: PrismaService) {
+        this.dataSourceTable = prismaService.dataSourceTable;
+    }
 
     create(
         userId: number,
         data: CreateDataSourceTableDto & { googleSpreadSheetId: string },
     ) {
-        return this.prismaService.dataSourceTable.create({
+        return this.dataSourceTable.create({
             data: { ...data, users: { connect: { id: userId } } },
         });
     }
 
-    update({ id, ...data }: UpdateDataSourceTableDto) {
-        return this.prismaService.dataSourceTable.update({
-            where: { id },
-            data,
-        });
-    }
-
-    getAll(userId: number) {
-        return this.prismaService.dataSourceTable.findMany({
-            where: {
-                users: this.getCommonUserIdFilter(userId),
-            },
-        });
-    }
-
     getInfo(userId: number) {
-        return this.prismaService.dataSourceTable.findMany({
+        return this.dataSourceTable.findMany({
             where: {
                 users: this.getCommonUserIdFilter(userId),
             },
@@ -60,7 +49,7 @@ export class DataSourceTableRepository {
     }
 
     getById(userId: number, tableId: number) {
-        return this.prismaService.dataSourceTable.findFirst({
+        return this.dataSourceTable.findFirst({
             where: { users: this.getCommonUserIdFilter(userId), id: tableId },
         });
     }

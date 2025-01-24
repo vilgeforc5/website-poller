@@ -14,17 +14,12 @@ export const PollingCard = async () => {
 
     return (
         <StatsCard
-            // data={{
-            //     title: "Количество опросов за сегодня",
-            //     value: data.count.toString(),
-            //     description: !isNaN(changeDate.getTime())
-            //         ? `Последний опрос: ${changeDate.toLocaleString()}`
-            //         : undefined,
-            // }}
             data={{
                 title: "Количество опросов за сегодня",
-                value: "3",
-                description: "Последний опрос: 02:10",
+                value: data.count.toString(),
+                description: !isNaN(changeDate.getTime())
+                    ? `Последний опрос: ${changeDate.toLocaleString()}`
+                    : undefined,
             }}
         />
     );

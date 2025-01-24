@@ -3,6 +3,7 @@ import { PollsCard } from "@/components/StatsCard/TodayInfo/PollsCard";
 import { PollingCard } from "@/components/StatsCard/TodayInfo/PollingCard";
 import { Suspense } from "react";
 import { SimpleGrid, Skeleton } from "@mantine/core";
+import { ParsingCard } from "@/components/StatsCard/TodayInfo/ParsingCard";
 
 export default function CardsComponent() {
     return (
@@ -15,6 +16,9 @@ export default function CardsComponent() {
             </Suspense>
             <Suspense fallback={<Skeleton radius="md" />}>
                 <PollingCard />
+            </Suspense>
+            <Suspense>
+                <ParsingCard />
             </Suspense>
         </SimpleGrid>
     );

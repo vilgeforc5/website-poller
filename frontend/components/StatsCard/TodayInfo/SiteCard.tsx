@@ -15,18 +15,12 @@ export const SiteCard = async () => {
         <StatsCard
             data={{
                 title: "Всего сайтов",
-                value: 50,
-                diff: 50,
-                description: "Последнее изменение: 01:38",
+                value: data.count.toString(),
+                diff: data.diff,
+                description: !isNaN(changeDate.getTime())
+                    ? `Последнее изменение: ${changeDate.toLocaleString()}`
+                    : undefined,
             }}
-            // data={{
-            //     title: "Всего сайтов",
-            //     value: data.count.toString(),
-            //     diff: data.diff,
-            //     description: !isNaN(changeDate.getTime())
-            //         ? `Последнее изменение: ${changeDate.toLocaleString()}`
-            //         : undefined,
-            // }}
         />
     );
 };

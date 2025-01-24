@@ -1,23 +1,28 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreatePollDto } from "src/layers/poll/dto/create-poll.dto";
+import { PrismaClient } from "@prisma/client";
 
 @Injectable()
 export class PollRepository {
-    constructor(private readonly prismaService: PrismaService) {}
+    private readonly poll: PrismaClient["poll"];
+
+    constructor(private readonly prismaService: PrismaService) {
+        this.poll = prismaService.poll;
+    }
 
     createMany(data: CreatePollDto[]) {
-        return this.prismaService.poll.createMany({
+        return this.poll.createMany({
             data,
         });
     }
 
-    getTotalPollCount() {
-        return this.prismaService.poll.count();
+    getCount() {
+        return this.poll.count();
     }
 
     getPositiveCodePollCount() {
-        return this.prismaService.poll.count({
+        return this.poll.count({
             where: {
                 statusCode: {
                     gte: 200,
@@ -46,7 +51,7 @@ export class PollRepository {
             totalPollsYesterday,
             positivePollsYesterday,
         ] = await this.prismaService.$transaction([
-            this.prismaService.poll.count({
+            this.poll.count({
                 where: {
                     createdAt: {
                         gte: todayStart,
@@ -54,7 +59,7 @@ export class PollRepository {
                     },
                 },
             }),
-            this.prismaService.poll.count({
+            this.poll.count({
                 where: {
                     createdAt: {
                         gte: todayStart,
@@ -66,7 +71,7 @@ export class PollRepository {
                     },
                 },
             }),
-            this.prismaService.poll.count({
+            this.poll.count({
                 where: {
                     createdAt: {
                         gte: yesterdayStart,
@@ -74,7 +79,7 @@ export class PollRepository {
                     },
                 },
             }),
-            this.prismaService.poll.count({
+            this.poll.count({
                 where: {
                     createdAt: {
                         gte: yesterdayStart,

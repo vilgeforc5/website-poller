@@ -28,11 +28,12 @@ export abstract class ChunkWorker<
         data?: ResultData[][];
     }> {
         const res = await this.onBeforeStart(scopeInfo);
-        const data = [];
 
         if (!res.ok) {
             return res;
         }
+
+        const data = [];
 
         while (true) {
             const chunk = await this.getChunk(this.processedCount, scopeInfo);

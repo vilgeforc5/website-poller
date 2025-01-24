@@ -14,6 +14,7 @@ import { Public } from "src/common/decorators/Public";
 import { GetCurrentUserId } from "src/common/decorators/GetCurrentUserId";
 import { GetCurrentUser } from "src/common/decorators/GetCurrentUser";
 import { RtGuard } from "src/common/guards/rt.guard";
+import { SignUpDto } from "src/auth/dto/signUp.dto";
 
 @Controller("auth")
 export class AuthController {
@@ -22,7 +23,7 @@ export class AuthController {
     @Public()
     @Post("signup")
     @HttpCode(HttpStatus.CREATED)
-    signUpLocal(@Body() dto: AuthDto): Promise<Tokens> {
+    signUpLocal(@Body() dto: SignUpDto): Promise<Tokens> {
         return this.authService.signUp(dto);
     }
 

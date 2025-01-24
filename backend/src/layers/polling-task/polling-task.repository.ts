@@ -2,17 +2,22 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreatePollingTaskDto } from "src/layers/polling-task/dto/create-polling-task.dto";
 import { UpdatePollingTaskDto } from "src/layers/polling-task/dto/update-polling-task.dto";
+import { PrismaClient } from "@prisma/client";
 
 @Injectable()
 export class PollingTaskRepository {
-    constructor(private readonly prismaService: PrismaService) {}
+    private readonly pollingTask: PrismaClient["pollingTask"];
+
+    constructor(prismaService: PrismaService) {
+        this.pollingTask = prismaService.pollingTask;
+    }
 
     create(dto: CreatePollingTaskDto) {
-        return this.prismaService.pollingTask.create({ data: dto });
+        return this.pollingTask.create({ data: dto });
     }
 
     update(id: number, { polls, ...data }: UpdatePollingTaskDto) {
-        return this.prismaService.pollingTask.update({
+        return this.pollingTask.update({
             where: { id },
             data: {
                 ...data,
@@ -26,11 +31,11 @@ export class PollingTaskRepository {
     }
 
     get(id: number) {
-        return this.prismaService.pollingTask.findUnique({ where: { id } });
+        return this.pollingTask.findUnique({ where: { id } });
     }
 
     getAllRunningTasks() {
-        return this.prismaService.pollingTask.findMany({
+        return this.pollingTask.findMany({
             where: {
                 pollingState: "RUNNING",
             },
@@ -44,7 +49,7 @@ export class PollingTaskRepository {
         const todayEnd = new Date();
         todayEnd.setHours(23, 59, 59, 999);
 
-        return this.prismaService.pollingTask.count({
+        return this.pollingTask.count({
             where: {
                 pollingState: "IDLE",
                 endTime: {
@@ -56,7 +61,7 @@ export class PollingTaskRepository {
     }
 
     async getLastPollingTaskTime(): Promise<Date | undefined> {
-        const lastTask = await this.prismaService.pollingTask.findFirst({
+        const lastTask = await this.pollingTask.findFirst({
             where: { pollingState: "IDLE" },
             orderBy: {
                 startTime: "desc",

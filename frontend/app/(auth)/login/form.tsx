@@ -1,6 +1,6 @@
 "use client";
 import { Form, useForm } from "@mantine/form";
-import { Button, TextInput } from "@mantine/core";
+import { Button, Center, TextInput } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useRouter } from "next/navigation";
 
@@ -57,7 +57,7 @@ export const LoginForm = () => {
             data.hasOwnProperty("access_token")
         ) {
             notifications.clean();
-            await router.replace("/");
+            router.replace("/dashboard");
         }
     }
 
@@ -79,9 +79,11 @@ export const LoginForm = () => {
                 type="password"
                 {...form.getInputProps("password")}
             />
-            <Button disabled={form.submitting} type="submit" mt="sm">
-                Зайти
-            </Button>
+            <Center>
+                <Button disabled={form.submitting} type="submit" mt="sm">
+                    Зайти
+                </Button>
+            </Center>
         </Form>
     );
 };

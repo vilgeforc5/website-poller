@@ -1,19 +1,18 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateSiteDto } from "src/layers/site/dto/create-site.dto";
+import { PrismaClient } from "@prisma/client";
 
 @Injectable()
 export class SiteRepository {
-    constructor(private readonly prismaService: PrismaService) {}
+    private readonly site: PrismaClient["site"];
 
-    getAll(userId: number) {
-        return this.prismaService.site.findMany({
-            where: this.idFilter(userId),
-        });
+    constructor(prismaService: PrismaService) {
+        this.site = prismaService.site;
     }
 
     getPaginated(userId: number, skip = 0, take = 10) {
-        return this.prismaService.site.findMany({
+        return this.site.findMany({
             skip,
             take,
             where: this.idFilter(userId),
@@ -24,7 +23,7 @@ export class SiteRepository {
         userId: number,
         { dataSourceTableParsingTaskId, ...other }: CreateSiteDto,
     ) {
-        return this.prismaService.site.upsert({
+        return this.site.upsert({
             where: { address: other.address },
             create: {
                 ...other,
@@ -41,7 +40,7 @@ export class SiteRepository {
         userId: number,
         { dataSourceTableParsingTaskId, ...other }: CreateSiteDto,
     ) {
-        return this.prismaService.site.upsert({
+        return this.site.upsert({
             where: { address: other.address },
             create: {
                 ...other,
@@ -55,13 +54,13 @@ export class SiteRepository {
     }
 
     count(userId: number) {
-        return this.prismaService.site.count({
+        return this.site.count({
             where: { users: { some: { id: userId } } },
         });
     }
 
     getLatestRecord(userId: number) {
-        return this.prismaService.site.findFirst({
+        return this.site.findFirst({
             orderBy: { createdAt: "desc" },
             where: this.idFilter(userId),
         });
@@ -72,9 +71,7 @@ export class SiteRepository {
         const pastDate = new Date();
         pastDate.setDate(currentDate.getDate() - daysBefore);
 
-        console.log(currentDate.toISOString());
-
-        return this.prismaService.site.count({
+        return this.site.count({
             where: {
                 createdAt: {
                     gte: pastDate,
@@ -82,10 +79,6 @@ export class SiteRepository {
                 },
             },
         });
-    }
-
-    getByAddress(address: string) {
-        return this.prismaService.site.findUnique({ where: { address } });
     }
 
     private idFilter(userId: number) {

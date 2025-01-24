@@ -3,7 +3,7 @@ import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { UserRepository } from "src/layers/users/user.repository";
 import { PinoLogger } from "nestjs-pino";
-import { Role, User } from "@prisma/client";
+import { User } from "@prisma/client";
 
 @Injectable()
 export class UsersService {
@@ -32,10 +32,6 @@ export class UsersService {
         this.logger.trace("findById");
 
         return this.userRepository.getById(id);
-    }
-
-    findByRole(roles: Role[]) {
-        return this.userRepository.getByRole(roles);
     }
 
     update(id: number, updateUserDto: UpdateUserDto) {

@@ -9,14 +9,6 @@ export class DataSourceTableController {
         private readonly dataSourceTableService: DataSourceTableService,
     ) {}
 
-    @Post()
-    create(
-        @GetCurrentUserId() id: number,
-        @Body() createDataSourceTableDto: CreateDataSourceTableDto,
-    ) {
-        return this.dataSourceTableService.create(id, createDataSourceTableDto);
-    }
-
     @Post("createMany")
     createMany(
         @GetCurrentUserId() id: number,

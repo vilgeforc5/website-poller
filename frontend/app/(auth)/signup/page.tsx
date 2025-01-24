@@ -1,7 +1,7 @@
 import { Flex, Title } from "@mantine/core";
-import { LoginForm } from "@/app/(login)/login/form";
+import { SignUpForm } from "@/app/(auth)/signup/form";
 
-export default function Login() {
+export default function Signup() {
     return (
         <Flex
             justify="center"
@@ -11,8 +11,8 @@ export default function Login() {
             direction="column"
             style={{ flexGrow: 1 }}
         >
-            <Title component="div">Логин</Title>
-            <LoginForm />
+            <Title component="div">Регистрация</Title>
+            <SignUpForm />
         </Flex>
     );
 }

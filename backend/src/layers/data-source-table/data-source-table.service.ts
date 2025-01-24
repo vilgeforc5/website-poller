@@ -2,7 +2,6 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 import { CreateDataSourceTableDto } from "src/layers/data-source-table/dto/create-data-source-table.dto";
 import { PinoLogger } from "nestjs-pino";
 import { DataSourceTableRepository } from "src/layers/data-source-table/data-source-table.repository";
-import { UpdateDataSourceTableDto } from "src/layers/data-source-table/dto/update-data-source-table.dto";
 
 @Injectable()
 export class DataSourceTableService {
@@ -59,16 +58,6 @@ export class DataSourceTableService {
                 });
             }),
         );
-    }
-
-    update(dto: UpdateDataSourceTableDto) {
-        this.logger.info("update source table", dto);
-
-        return this.dataSourceTableRepository.update(dto);
-    }
-
-    getAll(userId: number) {
-        return this.dataSourceTableRepository.getAll(userId);
     }
 
     async getInfo(userId: number) {

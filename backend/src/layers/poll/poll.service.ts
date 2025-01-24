@@ -19,7 +19,7 @@ export class PollService {
     }
 
     async getLatestInfo() {
-        const totalCount = await this.pollRepository.getTotalPollCount();
+        const totalCount = await this.pollRepository.getCount();
         const todayPositive =
             await this.pollRepository.getPositiveCodePollCount();
 
