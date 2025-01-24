@@ -29,7 +29,6 @@ export class DataSourceTableRepository {
                 users: {
                     select: {
                         email: true,
-                        role: true,
                     },
                 },
                 parsingTasks: {

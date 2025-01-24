@@ -3,6 +3,7 @@ import { CreateDataSourceTableTaskDto } from "src/layers/data-source-table-task/
 import { UpdateDataSourceTableTaskDto } from "src/layers/data-source-table-task/dto/update-data-source-table-task.dto";
 import { DataSourceTableTaskRepository } from "src/layers/data-source-table-task/data-source-table-task.repository";
 import { PinoLogger } from "nestjs-pino";
+import { IDataSourceTableTaskLatestInfo } from "src/layers/data-source-table-task/data-source-table-task.types";
 
 @Injectable()
 export class DataSourceTableTaskService {
@@ -37,17 +38,18 @@ export class DataSourceTableTaskService {
         return this.dataSourceTableTaskRepository.getAll(userId);
     }
 
-    async getLatestInfo(userId: number) {
+    async getLatestInfo(
+        userId: number,
+    ): Promise<IDataSourceTableTaskLatestInfo> {
         const lastTaskTime =
-            await this.dataSourceTableTaskRepository.getLastTaskTime(userId);
-        const count =
-            await this.dataSourceTableTaskRepository.getNumberOfTasksToday(
-                userId,
-            );
+            await this.dataSourceTableTaskRepository.getLastTask(userId);
+        const endTime = lastTaskTime?.endTime;
 
         return {
-            lastTaskTime,
-            count,
+            lastTaskTime: endTime ? endTime.toString() : null,
+            count: await this.dataSourceTableTaskRepository.getNumberOfTasksToday(
+                userId,
+            ),
         };
     }
 }

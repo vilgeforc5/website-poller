@@ -23,7 +23,7 @@ export class PollingTaskRepository {
                 ...data,
                 polls: {
                     createMany: {
-                        data: polls,
+                        data: polls || [],
                     },
                 },
             },
@@ -60,8 +60,8 @@ export class PollingTaskRepository {
         });
     }
 
-    async getLastPollingTaskTime(): Promise<Date | undefined> {
-        const lastTask = await this.pollingTask.findFirst({
+    async getLastPollingTask() {
+        return await this.pollingTask.findFirst({
             where: { pollingState: "IDLE" },
             orderBy: {
                 startTime: "desc",
@@ -70,7 +70,5 @@ export class PollingTaskRepository {
                 endTime: true,
             },
         });
-
-        return lastTask?.endTime;
     }
 }

@@ -62,7 +62,7 @@ export class AuthService {
 
     async logout(userId: number): Promise<boolean> {
         await this.usersService.update(userId, {
-            hashedRt: null,
+            hashedRt: undefined,
         });
 
         return true;

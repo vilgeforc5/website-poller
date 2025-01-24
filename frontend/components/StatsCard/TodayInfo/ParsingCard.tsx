@@ -1,25 +1,21 @@
 import StatsCard from "../StatsCard";
 import { serverFetch } from "@/lib/serverFetch";
-
-interface ParsingCardData {
-    lastTaskTime: string;
-    count: number;
-}
+import { IDataSourceTableTaskLatestInfo } from "backend/src/layers/data-source-table-task/data-source-table-task.types";
 
 export const ParsingCard = async () => {
-    const { data } = await serverFetch<ParsingCardData>(
+    const {
+        data: { count, lastTaskTime },
+    } = await serverFetch<IDataSourceTableTaskLatestInfo>(
         "/data-source-table-task/latest-info",
     );
-
-    const lastTime = new Date(data?.lastTaskTime);
 
     return (
         <StatsCard
             data={{
                 title: "Количество парсингов таблиц за сегодня",
-                value: data?.count.toString(),
-                description: !isNaN(lastTime.getTime())
-                    ? `Последний парсинг: ${lastTime.toLocaleString()}`
+                value: count,
+                description: lastTaskTime
+                    ? `Последний парсинг: ${new Date(lastTaskTime).toLocaleString()}`
                     : undefined,
             }}
         />

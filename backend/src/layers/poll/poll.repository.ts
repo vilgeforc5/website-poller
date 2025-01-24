@@ -1,6 +1,5 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
-import { CreatePollDto } from "src/layers/poll/dto/create-poll.dto";
 import { PrismaClient } from "@prisma/client";
 
 @Injectable()
@@ -11,22 +10,31 @@ export class PollRepository {
         this.poll = prismaService.poll;
     }
 
-    createMany(data: CreatePollDto[]) {
-        return this.poll.createMany({
-            data,
-        });
-    }
-
     getCount() {
         return this.poll.count();
     }
 
-    getPositiveCodePollCount() {
+    getPositiveCodePollCount(from?: Date, to?: Date) {
         return this.poll.count({
             where: {
                 statusCode: {
                     gte: 200,
                     lte: 299,
+                },
+                createdAt: {
+                    gte: from,
+                    lte: to,
+                },
+            },
+        });
+    }
+
+    getTotalPollCount(from?: Date, to?: Date) {
+        return this.poll.count({
+            where: {
+                createdAt: {
+                    gte: from,
+                    lte: to,
                 },
             },
         });
@@ -51,52 +59,17 @@ export class PollRepository {
             totalPollsYesterday,
             positivePollsYesterday,
         ] = await this.prismaService.$transaction([
-            this.poll.count({
-                where: {
-                    createdAt: {
-                        gte: todayStart,
-                        lt: todayEnd,
-                    },
-                },
-            }),
-            this.poll.count({
-                where: {
-                    createdAt: {
-                        gte: todayStart,
-                        lt: todayEnd,
-                    },
-                    statusCode: {
-                        gte: 200,
-                        lte: 299,
-                    },
-                },
-            }),
-            this.poll.count({
-                where: {
-                    createdAt: {
-                        gte: yesterdayStart,
-                        lt: yesterdayEnd,
-                    },
-                },
-            }),
-            this.poll.count({
-                where: {
-                    createdAt: {
-                        gte: yesterdayStart,
-                        lt: yesterdayEnd,
-                    },
-                    statusCode: {
-                        gte: 200,
-                        lt: 299,
-                    },
-                },
-            }),
+            this.getTotalPollCount(todayStart, todayEnd),
+            this.getPositiveCodePollCount(todayStart, todayEnd),
+            this.getTotalPollCount(yesterdayStart, yesterdayEnd),
+            this.getPositiveCodePollCount(yesterdayStart, yesterdayEnd),
         ]);
 
         const percentPositiveToday =
             totalPollsToday > 0
                 ? (positivePollsToday / totalPollsToday) * 100
                 : 0;
+
         const percentPositiveYesterday =
             totalPollsYesterday > 0
                 ? (positivePollsYesterday / totalPollsYesterday) * 100

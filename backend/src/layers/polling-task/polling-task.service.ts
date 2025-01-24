@@ -3,6 +3,7 @@ import { CreatePollingTaskDto } from "src/layers/polling-task/dto/create-polling
 import { PollingTaskRepository } from "src/layers/polling-task/polling-task.repository";
 import { UpdatePollingTaskDto } from "src/layers/polling-task/dto/update-polling-task.dto";
 import { PinoLogger } from "nestjs-pino";
+import { IPollingTaskLatestInfo } from "src/layers/polling-task/polling-task.types";
 
 @Injectable()
 export class PollingTaskService {
@@ -31,10 +32,13 @@ export class PollingTaskService {
         return runningTasks.length !== 0;
     }
 
-    async getLatestInfo() {
+    async getLatestInfo(): Promise<IPollingTaskLatestInfo> {
+        const lastTask = await this.pollingRepository.getLastPollingTask();
+        const endTime = lastTask?.endTime;
+
         return {
             count: await this.pollingRepository.getNumberOfTasksToday(),
-            lastDate: await this.pollingRepository.getLastPollingTaskTime(),
+            lastTaskTime: endTime ? endTime.toString() : null,
         };
     }
 }

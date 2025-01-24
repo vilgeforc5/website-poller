@@ -6,7 +6,7 @@ import classes from "./StatsCard.module.scss";
 type StatsCardProps = {
     data: {
         title: string;
-        value: string;
+        value: string | number;
         diff?: number;
         period?: string;
         description?: string;

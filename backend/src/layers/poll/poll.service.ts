@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { PollRepository } from "src/layers/poll/poll.repository";
-import { CreatePollDto } from "src/layers/poll/dto/create-poll.dto";
 import { PinoLogger } from "nestjs-pino";
+import { IPollLatestInfo } from "src/layers/poll/poll.types";
 
 @Injectable()
 export class PollService {
@@ -12,21 +12,15 @@ export class PollService {
         this.logger.setContext(PollService.name);
     }
 
-    createMany(dto: CreatePollDto[]) {
-        this.logger.info("createBySiteId: ", dto);
-
-        return this.pollRepository.createMany(dto);
-    }
-
-    async getLatestInfo() {
+    async getLatestInfo(): Promise<IPollLatestInfo> {
         const totalCount = await this.pollRepository.getCount();
         const todayPositive =
             await this.pollRepository.getPositiveCodePollCount();
 
         return {
-            todayPositivePercent:
+            positiveCodePercent:
                 totalCount > 0 ? (todayPositive / totalCount) * 100 : 0,
-            difference:
+            diffFromYesterday:
                 await this.pollRepository.getDailyPositiveStatusPercent(),
         };
     }

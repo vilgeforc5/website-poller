@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { CreateSiteDto } from "src/layers/site/dto/create-site.dto";
 import { SiteRepository } from "src/layers/site/site.repository";
 import { PinoLogger } from "nestjs-pino";
+import { ISiteLatestInfo } from "src/layers/site/site.types";
 
 @Injectable()
 export class SiteService {
@@ -22,11 +23,19 @@ export class SiteService {
         return this.siteRepository.getPaginated(userId, skip, take);
     }
 
-    async getLatestInfo(userId: number) {
+    async getLatestInfo(userId: number): Promise<ISiteLatestInfo> {
         const count = await this.siteRepository.count(userId);
         const latestRecord = await this.siteRepository.getLatestRecord(userId);
-        const diff = await this.siteRepository.getCountDifference(userId);
+        const diffFromYesterday =
+            await this.siteRepository.getCountDifference(userId);
+        const lastCreatedTime = latestRecord?.createdAt;
 
-        return { count, createdAt: latestRecord?.createdAt, diff };
+        return {
+            count,
+            lastCreatedTime: lastCreatedTime
+                ? lastCreatedTime.toString()
+                : null,
+            diffFromYesterday,
+        };
     }
 }

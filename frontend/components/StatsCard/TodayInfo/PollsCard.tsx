@@ -1,20 +1,16 @@
 import StatsCard from "@/components/StatsCard/StatsCard";
 import { serverFetch } from "@/lib/serverFetch";
-
-interface IPollsInfo {
-    todayPositivePercent: number;
-    difference: number;
-}
+import { IPollLatestInfo } from "backend/src/layers/poll/poll.types";
 
 export const PollsCard = async () => {
-    const { data } = await serverFetch<IPollsInfo>("/poll/latest-info");
+    const { data } = await serverFetch<IPollLatestInfo>("/poll/latest-info");
 
     return (
         <StatsCard
             data={{
                 title: "Процент позитивных статус кодов",
-                value: `${data.todayPositivePercent.toFixed(2)}%`,
-                diff: data.difference,
+                value: `${data.positiveCodePercent.toFixed(2)}%`,
+                diff: data.diffFromYesterday,
                 description: "За сегодня",
             }}
         />

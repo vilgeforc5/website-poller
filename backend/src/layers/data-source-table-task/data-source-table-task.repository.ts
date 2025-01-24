@@ -87,13 +87,10 @@ export class DataSourceTableTaskRepository {
         });
     }
 
-    async getLastTaskTime(userId: number): Promise<Date | undefined> {
-        const lastTask = await this.dataSourceTableTask.findFirst({
+    async getLastTask(userId: number) {
+        return await this.dataSourceTableTask.findFirst({
             orderBy: {
                 startTime: "desc",
-            },
-            select: {
-                endTime: true,
             },
             where: {
                 dataSourceTable: {
@@ -105,7 +102,5 @@ export class DataSourceTableTaskRepository {
                 },
             },
         });
-
-        return lastTask.endTime;
     }
 }

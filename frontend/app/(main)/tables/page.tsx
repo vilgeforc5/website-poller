@@ -1,6 +1,4 @@
 import {
-    List,
-    ListItem,
     Stack,
     Table,
     TableTbody,
@@ -16,19 +14,15 @@ import { serverFetch } from "@/lib/serverFetch";
 import { SiteSourceTableForm } from "@/components/Forms/SiteSourceTableForm/SiteSourceTableForm";
 import { revalidationKeys } from "@/lib/revalidationKeys";
 import { revalidateTag } from "next/cache";
-
-interface ITableInfo {
-    url: string;
-    createdAt: string;
-    lastPolled?: string;
-    users: string[];
-    parsingTasks: { time: string; addedSites: string[] }[];
-}
+import { IDataSourceTableInfo } from "backend/src/layers/data-source-table/data-source-table.types";
 
 export default async function TablesPage() {
-    const tables = await serverFetch<ITableInfo[]>("/data-source-table/info", {
-        next: { tags: [revalidationKeys["parsing-tables"]] },
-    });
+    const tables = await serverFetch<IDataSourceTableInfo[]>(
+        "/data-source-table/info",
+        {
+            next: { tags: [revalidationKeys["parsing-tables"]] },
+        },
+    );
 
     const onAddUrlsSubmit = async (urls: string[]) => {
         "use server";
@@ -87,57 +81,6 @@ export default async function TablesPage() {
                                         : "-"}
                                 </TableTd>
                                 <TableTd>{item.users.join(", ")}</TableTd>
-                            </TableTr>
-                            <TableTr>
-                                <TableTd colSpan={4}>
-                                    <Table withColumnBorders={true}>
-                                        <TableThead>
-                                            <TableTr>
-                                                <TableTd>
-                                                    Время парсинга
-                                                </TableTd>
-                                                <TableTd>
-                                                    Добавленные сайты
-                                                </TableTd>
-                                            </TableTr>
-                                        </TableThead>
-                                        <TableTbody>
-                                            {item.parsingTasks.map(
-                                                (item, idx) => (
-                                                    <TableTr key={idx}>
-                                                        <TableTd
-                                                            style={{
-                                                                verticalAlign:
-                                                                    "top",
-                                                            }}
-                                                        >
-                                                            {new Date(
-                                                                item.time,
-                                                            ).toLocaleString()}
-                                                        </TableTd>
-                                                        <TableTd>
-                                                            <List>
-                                                                {item.addedSites
-                                                                    .length ===
-                                                                    0 &&
-                                                                    "нет новых"}
-                                                                {item.addedSites.map(
-                                                                    (url) => (
-                                                                        <ListItem>
-                                                                            {
-                                                                                url
-                                                                            }
-                                                                        </ListItem>
-                                                                    ),
-                                                                )}
-                                                            </List>
-                                                        </TableTd>
-                                                    </TableTr>
-                                                ),
-                                            )}
-                                        </TableTbody>
-                                    </Table>
-                                </TableTd>
                             </TableTr>
                         </>
                     ))}

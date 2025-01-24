@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { DataSourceTableService } from "src/layers/data-source-table/data-source-table.service";
 import { PinoLogger } from "nestjs-pino";
 import { ParserWorkerService } from "src/workers/data-source-table-parser/parser-worker/parser-worker.service";
@@ -17,6 +17,11 @@ export class DataSourceTableParserService {
 
     async triggerManualParse(userId: number, tableId: number) {
         const table = await this.dataSourceTableService.get(userId, tableId);
+
+        if (!table || !table.id) {
+            throw new BadRequestException();
+        }
+
         const task = await this.dataSourceTableTaskService.create({
             dataSourceTableId: table.id,
             updateTrigger: "MANUAL",

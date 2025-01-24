@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 import { CreateDataSourceTableDto } from "src/layers/data-source-table/dto/create-data-source-table.dto";
 import { PinoLogger } from "nestjs-pino";
 import { DataSourceTableRepository } from "src/layers/data-source-table/data-source-table.repository";
+import { IDataSourceTableInfo } from "src/layers/data-source-table/data-source-table.types";
 
 @Injectable()
 export class DataSourceTableService {
@@ -60,21 +61,30 @@ export class DataSourceTableService {
         );
     }
 
-    async getInfo(userId: number) {
+    async getInfo(userId: number): Promise<IDataSourceTableInfo[]> {
         const info = await this.dataSourceTableRepository.getInfo(userId);
 
         return info.map((table) => {
             const lastPoll = table.parsingTasks[0];
+            const lastPollStartTime = lastPoll?.startTime;
 
             return {
                 url: table.url,
-                createdAt: table.createdAt,
-                lastPolled: lastPoll?.startTime,
+                createdAt: table.createdAt.toString(),
+                lastPolled: lastPollStartTime
+                    ? lastPollStartTime.toString()
+                    : null,
                 users: table.users.map((user) => user.email),
-                parsingTasks: table.parsingTasks.map((task) => ({
-                    time: task?.startTime,
-                    addedSites: task.addedSites.map((site) => site.address),
-                })),
+                parsingTasks: table.parsingTasks.map((task) => {
+                    const taskStartTime = task.startTime;
+
+                    return {
+                        startTime: taskStartTime
+                            ? taskStartTime.toString()
+                            : null,
+                        addedSites: task.addedSites.map((site) => site.address),
+                    };
+                }),
             };
         });
     }

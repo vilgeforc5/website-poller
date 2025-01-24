@@ -25,7 +25,7 @@ export abstract class ChunkWorker<
     async work(scopeInfo: ScopeInfo): Promise<{
         ok: boolean;
         message?: string;
-        data?: ResultData[][];
+        data?: Array<ResultData>;
     }> {
         const res = await this.onBeforeStart(scopeInfo);
 
@@ -33,7 +33,7 @@ export abstract class ChunkWorker<
             return res;
         }
 
-        const data = [];
+        const data: ResultData[] = [];
 
         while (true) {
             const chunk = await this.getChunk(this.processedCount, scopeInfo);
@@ -42,7 +42,9 @@ export abstract class ChunkWorker<
                 break;
             }
 
-            data.push(await this.processChunk(chunk, scopeInfo));
+            const processedChunk = await this.processChunk(chunk, scopeInfo);
+
+            data.push(processedChunk);
             this.processedCount += chunk.length;
         }
 

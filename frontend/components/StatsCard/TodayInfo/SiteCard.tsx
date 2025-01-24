@@ -1,24 +1,19 @@
 import StatsCard from "@/components/StatsCard/StatsCard";
 import { serverFetch } from "@/lib/serverFetch";
-
-interface ISiteInfo {
-    count: number;
-    diff: number;
-    createdAt: Date;
-}
+import { ISiteLatestInfo } from "backend/src/layers/site/site.types";
 
 export const SiteCard = async () => {
-    const { data } = await serverFetch<ISiteInfo>("/site/latest-info");
-    const changeDate = new Date(data.createdAt);
+    const { data } = await serverFetch<ISiteLatestInfo>("/site/latest-info");
+    const lastCreatedTime = data.lastCreatedTime;
 
     return (
         <StatsCard
             data={{
                 title: "Всего сайтов",
-                value: data.count.toString(),
-                diff: data.diff,
-                description: !isNaN(changeDate.getTime())
-                    ? `Последнее изменение: ${changeDate.toLocaleString()}`
+                value: data.count,
+                diff: data.diffFromYesterday,
+                description: lastCreatedTime
+                    ? `Последнее изменение: ${new Date(lastCreatedTime).toLocaleString()}`
                     : undefined,
             }}
         />

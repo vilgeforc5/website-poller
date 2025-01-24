@@ -15,7 +15,7 @@ export class PollerService {
         logger.setContext(PollerService.name);
     }
 
-    async triggerManual(userId: number, dto: TriggerManualPollDto) {
+    async triggerManual(userId: number, dto?: TriggerManualPollDto) {
         this.logger.info("triggerPoll");
 
         const hasRunningTasks = await this.pollingTaskService.hasRunningTask();
@@ -32,7 +32,7 @@ export class PollerService {
             updateTrigger: "MANUAL",
         });
 
-        this.startTask(userId, task.id, dto.method, dto.parallelProcessCount);
+        this.startTask(userId, task.id, dto?.method, dto?.parallelProcessCount);
 
         return { id: task.id };
     }

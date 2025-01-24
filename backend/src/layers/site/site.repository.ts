@@ -55,7 +55,7 @@ export class SiteRepository {
 
     count(userId: number) {
         return this.site.count({
-            where: { users: { some: { id: userId } } },
+            where: this.idFilter(userId),
         });
     }
 
@@ -66,13 +66,14 @@ export class SiteRepository {
         });
     }
 
-    getCountDifference(daysBefore = 1) {
+    getCountDifference(userId: number, daysBefore = 1) {
         const currentDate = new Date();
         const pastDate = new Date();
         pastDate.setDate(currentDate.getDate() - daysBefore);
 
         return this.site.count({
             where: {
+                ...this.idFilter(userId),
                 createdAt: {
                     gte: pastDate,
                     lte: currentDate,

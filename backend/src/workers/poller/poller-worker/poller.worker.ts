@@ -128,13 +128,25 @@ export class PollerWorker extends ChunkWorker<
             requestMethod,
         );
 
-        const polls = poll.map((data) => ({
-            siteId: sites.find((site) => site.address === data.url).id,
-            statusCode: data.status,
-            retryCount: data.retryCount,
-            requestMethod,
-            pollingTaskId,
-        }));
+        const polls = poll
+            .map((data) => {
+                const targetSite = sites.find(
+                    (site) => site.address === data.url,
+                );
+
+                if (!targetSite) {
+                    return undefined;
+                }
+
+                return {
+                    siteId: targetSite.id,
+                    statusCode: data.status,
+                    retryCount: data.retryCount,
+                    requestMethod,
+                    pollingTaskId,
+                };
+            })
+            .filter((poll) => !!poll);
 
         await this.pollingTaskService.update(pollingTaskId, { polls });
     }

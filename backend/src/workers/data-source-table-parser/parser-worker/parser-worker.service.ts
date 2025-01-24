@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { PinoLogger } from "nestjs-pino";
 import { ChunkWorker } from "src/workers/chunk-worker/chunk-worker";
 import { ConfigService } from "@nestjs/config";
@@ -33,7 +33,13 @@ export class ParserWorkerService extends ChunkWorker<
     ) {
         super();
 
-        this.googleSpreadsheetKey = config.get("GOOGLE_SPREADSHEET_API_KEY");
+        const spreadsheetKey = config.get("GOOGLE_SPREADSHEET_API_KEY");
+
+        if (!spreadsheetKey) {
+            throw new InternalServerErrorException();
+        }
+
+        this.googleSpreadsheetKey = spreadsheetKey;
         logger.setContext(ParserWorkerService.name);
     }
 
