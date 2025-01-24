@@ -12,19 +12,17 @@ export async function middleware(req: NextRequest, res: NextResponse) {
         const refresh_token_cookie = req.cookies.get("refresh_token");
         let tokenIsValid = isTokenValid(token?.value);
 
-        if (req.nextUrl.pathname === "/login") {
+        const pathName = req.nextUrl.pathname;
+
+        if (pathName === "/login" || pathName === "/signup") {
             if (!tokenIsValid) {
                 return NextResponse.next();
             } else {
                 const baseUrl = req.nextUrl.clone();
-                baseUrl.pathname = "/";
+                baseUrl.pathname = "/dashboard";
 
                 return NextResponse.redirect(baseUrl);
             }
-        }
-
-        if (!tokenIsValid && req.nextUrl.pathname === "/login") {
-            return NextResponse.next();
         }
 
         const newResponse = NextResponse.next();
@@ -46,6 +44,8 @@ export async function middleware(req: NextRequest, res: NextResponse) {
 
             tokenIsValid = true;
         }
+
+        console.log({ tokenIsValid, url: pathName });
 
         return tokenIsValid ? newResponse : NextResponse.redirect(url);
     } catch (error) {
