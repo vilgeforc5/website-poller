@@ -3,6 +3,7 @@ import { CreateDataSourceTableDto } from "src/layers/data-source-table/dto/creat
 import { PinoLogger } from "nestjs-pino";
 import { DataSourceTableRepository } from "src/layers/data-source-table/data-source-table.repository";
 import { IDataSourceTableInfo } from "src/layers/data-source-table/data-source-table.types";
+import { DeleteDataSourceTableDto } from "src/layers/data-source-table/dto/delete-data-source-table.dto";
 
 @Injectable()
 export class DataSourceTableService {
@@ -69,6 +70,7 @@ export class DataSourceTableService {
             const lastPollStartTime = lastPoll?.startTime;
 
             return {
+                id: table.id,
                 url: table.url,
                 createdAt: table.createdAt.toString(),
                 lastPolled: lastPollStartTime
@@ -82,6 +84,8 @@ export class DataSourceTableService {
                         startTime: taskStartTime.toString(),
                         addedSites: task.addedSites.map((site) => site.address),
                         id: task.id,
+                        state: task.workingState,
+                        error: task.error,
                     };
                 }),
             };
@@ -90,5 +94,9 @@ export class DataSourceTableService {
 
     get(userId: number, tableId: number) {
         return this.dataSourceTableRepository.getById(userId, tableId);
+    }
+
+    delete(userId: number, deleteDto: DeleteDataSourceTableDto) {
+        return this.dataSourceTableRepository.delete(userId, deleteDto);
     }
 }

@@ -18,7 +18,7 @@ export const AddParsingTableForm = ({
     const [isDisabled, setIsDisabled] = useState(false);
     const baseInputRef = useRef<HTMLInputElement>(null);
 
-    const onAddUrl = () => {
+    const onManualAddUrl = () => {
         const input = baseInputRef.current;
         if (!input) return;
 
@@ -82,10 +82,10 @@ export const AddParsingTableForm = ({
                                     ? "var(--mantine-color-red-5)"
                                     : "var(--mantine-color-blue-5)"
                             }
-                            onClick={onAddUrl}
+                            onClick={onManualAddUrl}
                         />
                     }
-                    onKeyDown={getHotkeyHandler([["Enter", onAddUrl]])}
+                    onKeyDown={getHotkeyHandler([["Enter", onManualAddUrl]])}
                 />
                 <Stack>
                     {newUrls.map((url) => (
@@ -104,7 +104,7 @@ export const AddParsingTableForm = ({
                         size="md"
                         disabled={newUrls.length === 0 || isDisabled}
                     >
-                        Загрузить
+                        Добавить
                     </Button>
                 </Group>
             </form>

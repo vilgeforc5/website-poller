@@ -1,6 +1,7 @@
 import StatsCard from "@/components/StatsCard/StatsCard";
 import { serverFetch } from "@/lib/serverFetch";
 import { ISiteLatestInfo } from "backend/src/layers/site/site.types";
+import { routeLinks } from "@/utils/route";
 
 export const SiteCard = async () => {
     const { data } = await serverFetch<ISiteLatestInfo>("/site/latest-info");
@@ -17,6 +18,7 @@ export const SiteCard = async () => {
             }
             diff={data.diffFromYesterday}
             value={data.count}
+            link={routeLinks.sites}
         />
     );
 };

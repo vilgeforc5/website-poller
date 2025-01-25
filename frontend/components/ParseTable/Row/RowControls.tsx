@@ -1,43 +1,77 @@
 "use client";
 
-import { ActionIcon, Group } from "@mantine/core";
-import { IconChevronCompactDown, IconDatabaseX } from "@tabler/icons-react";
-import { useParseTableRowContext } from "@/components/ParseTable/Row/RowContext";
+import { ActionIcon, ActionIconGroup } from "@mantine/core";
+import {
+    IconChevronCompactDown,
+    IconDatabaseX,
+    IconRestore,
+} from "@tabler/icons-react";
+import { useTablesStore } from "@/store/store/table-store-provider";
 
-export const RowControls = () => {
-    const { toggleDropDown, shouldBeDisabled } = useParseTableRowContext();
+interface IRowControlsProps {
+    id: number;
+    disableDropDown: boolean;
+}
+
+export const RowControls = ({ id, disableDropDown }: IRowControlsProps) => {
+    const {
+        deleteTableAction,
+        reparseTableAction,
+        openedDropdowns,
+        toggleDropDown,
+    } = useTablesStore((state) => state);
+
+    const isDropDownOpen = openedDropdowns.includes(id);
 
     return (
-        <Group wrap="nowrap" justify="start" gap="xs" w="xl">
+        <ActionIconGroup w="xl">
             <ActionIcon
                 variant="outline"
                 size="md"
-                aria-label="Settings"
-                onClick={toggleDropDown}
-                disabled={shouldBeDisabled}
+                color="blue"
+                onClick={() => toggleDropDown(id)}
+                disabled={disableDropDown}
             >
                 <IconChevronCompactDown
                     style={{
                         width: "70%",
                         height: "70%",
+                        transform: isDropDownOpen
+                            ? "rotate(-180deg)"
+                            : "initial",
                     }}
-                    stroke={1.5}
+                    stroke={2.5}
                 />
             </ActionIcon>
             <ActionIcon
                 variant="outline"
                 size="md"
-                aria-label="Settings"
                 color="red"
+                onClick={() => deleteTableAction(id)}
             >
                 <IconDatabaseX
                     style={{
                         width: "70%",
                         height: "70%",
                     }}
-                    stroke={1.5}
+                    stroke={2}
                 />
             </ActionIcon>
-        </Group>
+            <ActionIcon
+                variant="outline"
+                size="md"
+                aria-label="Settings"
+                color="yellow"
+                onClick={() => reparseTableAction(id)}
+            >
+                <IconRestore
+                    style={{
+                        width: "70%",
+                        height: "70%",
+                    }}
+                    stroke={2}
+                />
+            </ActionIcon>
+        </ActionIconGroup>
     );
 };

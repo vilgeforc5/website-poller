@@ -44,14 +44,14 @@ export class ParserWorkerService extends ChunkWorker<
     }
 
     override async onBeforeStart(scope: ParserWorkerServiceScope) {
-        const spreadSheet = new GoogleSpreadsheet(scope.spreadsheetId, {
-            apiKey: this.googleSpreadsheetKey,
-        });
-
-        await spreadSheet.loadInfo();
-        const sheet = spreadSheet.sheetsByIndex[0];
-
         try {
+            const spreadSheet = new GoogleSpreadsheet(scope.spreadsheetId, {
+                apiKey: this.googleSpreadsheetKey,
+            });
+
+            await spreadSheet.loadInfo();
+            const sheet = spreadSheet.sheetsByIndex[0];
+
             // check for consistency as first row seems to be google-api required.
             await sheet.getRows({ limit: 2, offset: 0 });
             this.sheet = sheet;

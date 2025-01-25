@@ -1,9 +1,9 @@
-import { Center, Title } from "@mantine/core";
+import { Stack, Title } from "@mantine/core";
 
 export default function NotFound() {
     return (
-        <Center flex={1}>
+        <Stack justify="center" align="center" flex={1}>
             <Title>Страница не найдена 😭</Title>
-        </Center>
+        </Stack>
     );
 }

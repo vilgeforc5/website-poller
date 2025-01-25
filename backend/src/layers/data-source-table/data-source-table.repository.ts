@@ -2,12 +2,13 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateDataSourceTableDto } from "src/layers/data-source-table/dto/create-data-source-table.dto";
 import { PrismaClient } from "@prisma/client";
+import { DeleteDataSourceTableDto } from "src/layers/data-source-table/dto/delete-data-source-table.dto";
 
 @Injectable()
 export class DataSourceTableRepository {
     private readonly dataSourceTable: PrismaClient["dataSourceTable"];
 
-    constructor(prismaService: PrismaService) {
+    constructor(private readonly prismaService: PrismaService) {
         this.dataSourceTable = prismaService.dataSourceTable;
     }
 
@@ -25,7 +26,10 @@ export class DataSourceTableRepository {
             where: {
                 users: this.getCommonUserIdFilter(userId),
             },
-            include: {
+            select: {
+                id: true,
+                url: true,
+                createdAt: true,
                 users: {
                     select: {
                         email: true,
@@ -35,6 +39,8 @@ export class DataSourceTableRepository {
                     orderBy: { startTime: "desc" },
                     select: {
                         startTime: true,
+                        workingState: true,
+                        error: true,
                         addedSites: {
                             select: {
                                 address: true,
@@ -42,6 +48,7 @@ export class DataSourceTableRepository {
                         },
                         id: true,
                     },
+                    take: 10,
                 },
             },
             orderBy: { createdAt: "desc" },
@@ -51,6 +58,21 @@ export class DataSourceTableRepository {
     getById(userId: number, tableId: number) {
         return this.dataSourceTable.findFirst({
             where: { users: this.getCommonUserIdFilter(userId), id: tableId },
+        });
+    }
+
+    delete(userId: number, deleteDto: DeleteDataSourceTableDto) {
+        return this.dataSourceTable.delete({
+            where: {
+                id: deleteDto.tableId,
+                users: {
+                    every: {
+                        id: {
+                            in: [userId],
+                        },
+                    },
+                },
+            },
         });
     }
 

@@ -1,4 +1,5 @@
-import { IsDate, IsOptional, IsString } from "class-validator";
+import { IsDate, IsEnum, IsOptional, IsString } from "class-validator";
+import { WorkingState } from "@prisma/client";
 
 export class UpdateDataSourceTableTaskDto {
     @IsDate()
@@ -8,4 +9,8 @@ export class UpdateDataSourceTableTaskDto {
     @IsOptional()
     @IsString()
     error?: string;
+
+    @IsOptional()
+    @IsEnum(WorkingState)
+    workingState?: WorkingState;
 }

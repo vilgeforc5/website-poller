@@ -28,13 +28,13 @@ model User {
 }
 
 model Site {
-  id                           Int                        @id @default(autoincrement())
-  address                      String                     @unique
-  createdAt                    DateTime                   @default(now())
+  id                           Int                         @id @default(autoincrement())
+  address                      String                      @unique
+  createdAt                    DateTime                    @default(now())
   users                        User[]
   polls                        Poll[]
-  dataSourceTableParsingTaskId Int
-  dataSourceTableParse         DataSourceTableParsingTask @relation(fields: [dataSourceTableParsingTaskId], references: [id])
+  dataSourceTableParsingTaskId Int?
+  dataSourceTableParse         DataSourceTableParsingTask? @relation(fields: [dataSourceTableParsingTaskId], references: [id])
 }
 
 model Poll {
@@ -44,8 +44,8 @@ model Poll {
   retryCount    Int               @default(0)
   requestMethod EnumRequestMethod
   pollingTaskId Int
-  site          Site              @relation(fields: [siteId], references: [id], onDelete: Cascade)
-  pollingTask   PollingTask       @relation(fields: [pollingTaskId], references: [id], onDelete: Cascade)
+  site          Site              @relation(fields: [siteId], references: [id])
+  pollingTask   PollingTask       @relation(fields: [pollingTaskId], references: [id])
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
 }
@@ -53,7 +53,7 @@ model Poll {
 model PollingTask {
   id            Int               @id @default(autoincrement())
   requestMethod EnumRequestMethod @default(GET)
-  pollingState  PollingState      @default(RUNNING)
+  pollingState  WorkingState      @default(RUNNING)
   updateTrigger UpdateTrigger
   startTime     DateTime          @default(now())
   endTime       DateTime?
@@ -66,20 +66,21 @@ model DataSourceTable {
   url                 String                       @unique
   provider            DataSourceTableProvider      @default(GOOGLE)
   createdAt           DateTime                     @default(now())
-  parsingTasks        DataSourceTableParsingTask[]
   googleSpreadSheetId String
   users               User[]
+  parsingTasks        DataSourceTableParsingTask[]
 }
 
 model DataSourceTableParsingTask {
   id                Int             @id @default(autoincrement())
-  dataSourceTable   DataSourceTable @relation(fields: [dataSourceTableId], references: [id])
-  dataSourceTableId Int
+  workingState      WorkingState    @default(RUNNING)
   updateTrigger     UpdateTrigger
   startTime         DateTime        @default(now())
   endTime           DateTime?
   addedSites        Site[]
   error             String?
+  dataSourceTable   DataSourceTable @relation(fields: [dataSourceTableId], references: [id], onDelete: Cascade)
+  dataSourceTableId Int
 }
 
 enum DataSourceTableProvider {
@@ -91,7 +92,7 @@ enum UpdateTrigger {
   SCHEDULE
 }
 
-enum PollingState {
+enum WorkingState {
   IDLE
   RUNNING
 }

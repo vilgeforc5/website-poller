@@ -57,7 +57,9 @@ export class PollerService {
             });
 
             if (!result.ok) {
-                throw new Error(result.message);
+                await this.pollingTaskService.update(pollingTaskId, {
+                    error: result.message || "Ошибка при парсинге",
+                });
             }
 
             this.logger.info("startPoll: ended");

@@ -55,10 +55,13 @@ export class DataSourceTableParserService {
 
             await this.dataSourceTableTaskService.update(taskId, {
                 endTime: new Date().toISOString(),
+                workingState: "IDLE",
             });
 
             if (!result.ok) {
-                throw new Error(result.message);
+                await this.dataSourceTableTaskService.update(taskId, {
+                    error: result.message || "Ошибка парсинга",
+                });
             }
         } catch (e) {
             this.logger.error(e);

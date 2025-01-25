@@ -26,7 +26,6 @@ interface PollerWorkerSourceData {
     id: number;
     address: string;
     createdAt: Date;
-    dataSourceTableParsingTaskId: number;
 }
 
 interface PollerWorkerScope {

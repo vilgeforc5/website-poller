@@ -13,7 +13,7 @@ export default function DashboardLayout({
 }) {
     return (
         <Stack>
-            <Title>Главная</Title>
+            <Title order={2}>Главная</Title>
             <SimpleGrid cols={{ base: 1, lg: 2 }}>
                 {cards}
                 {codeChart}

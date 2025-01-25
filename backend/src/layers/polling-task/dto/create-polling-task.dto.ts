@@ -1,5 +1,5 @@
 import { IsDate, IsEnum, IsOptional } from "class-validator";
-import { EnumRequestMethod, PollingState, UpdateTrigger } from "@prisma/client";
+import { EnumRequestMethod, UpdateTrigger, WorkingState } from "@prisma/client";
 
 export class CreatePollingTaskDto {
     @IsOptional()
@@ -7,8 +7,8 @@ export class CreatePollingTaskDto {
     requestMethod?: EnumRequestMethod;
 
     @IsOptional()
-    @IsEnum(PollingState)
-    pollingState?: PollingState;
+    @IsEnum(WorkingState)
+    pollingState?: WorkingState;
 
     @IsOptional()
     @IsDate()

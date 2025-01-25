@@ -1,4 +1,3 @@
-"use server";
 import { Header } from "@/components/Header/Header";
 import { cookies } from "next/headers";
 import { parseJwt } from "@/lib/auth";

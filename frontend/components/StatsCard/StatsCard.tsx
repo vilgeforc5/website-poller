@@ -78,7 +78,7 @@ const StatsCard = ({
                 {link && (
                     <NavLink
                         label="смотреть больше"
-                        href="/tables"
+                        href={link}
                         p={0}
                         component={Link}
                         variant="subtle"
