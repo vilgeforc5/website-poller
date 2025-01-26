@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { TablesStoreProvider } from "@/store/store/table-store-provider";
+import { TablesStoreProvider } from "@/store/store/table/table-store-provider";
 import { DeleteDataSourceTable } from "@/components/Modals/DataSourceTable/DeleteDataSourceTable";
 import { ReparseDataSourceTable } from "@/components/Modals/DataSourceTable/ReparseDataSourceTable";
 import { PageTitle } from "@/components/PageTitle/PageTitle";

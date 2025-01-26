@@ -11,10 +11,10 @@ interface IPageTitleProps extends GroupProps {
 export const PageTitle = ({ title, refresh, ...other }: IPageTitleProps) => (
     <Group {...other}>
         {refresh && (
-            <ActionIcon variant="filled" onClick={refresh}>
+            <ActionIcon variant="filled" size="sm" onClick={refresh}>
                 <IconRefresh />
             </ActionIcon>
         )}
-        <Title order={2}>{title}</Title>
+        <Title order={3}>{title}</Title>
     </Group>
 );

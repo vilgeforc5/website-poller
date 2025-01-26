@@ -2,9 +2,9 @@
 
 import { ReactNode } from "react";
 import { Collapse } from "@mantine/core";
-import { useTablesStore } from "@/store/store/table-store-provider";
+import { useTablesStore } from "@/store/store/table/table-store-provider";
 
-export const RowDropDown = ({
+export const ParseInfoDropdownWrapper = ({
     children,
     id,
 }: {

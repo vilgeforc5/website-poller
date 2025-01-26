@@ -1,5 +1,5 @@
 import { Stack } from "@mantine/core";
 
-export default function SitesPage() {
-    return <Stack>сайты</Stack>;
+export default async function SitesPage() {
+    return <Stack> </Stack>;
 }

@@ -6,7 +6,7 @@ import {
     IconDatabaseX,
     IconRestore,
 } from "@tabler/icons-react";
-import { useTablesStore } from "@/store/store/table-store-provider";
+import { useTablesStore } from "@/store/store/table/table-store-provider";
 
 interface IRowControlsProps {
     id: number;
@@ -24,7 +24,7 @@ export const RowControls = ({ id, disableDropDown }: IRowControlsProps) => {
     const isDropDownOpen = openedDropdowns.includes(id);
 
     return (
-        <ActionIconGroup w="xl">
+        <ActionIconGroup style={{ flexWrap: "wrap" }}>
             <ActionIcon
                 variant="outline"
                 size="md"

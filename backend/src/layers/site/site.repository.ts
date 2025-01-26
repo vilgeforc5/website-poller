@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateSiteDto } from "src/layers/site/dto/create-site.dto";
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 
 @Injectable()
 export class SiteRepository {
@@ -11,45 +11,60 @@ export class SiteRepository {
         this.site = prismaService.site;
     }
 
-    getPaginated(userId: number, skip = 0, take = 10) {
+    getPaginated(
+        userId: number,
+        skip = 0,
+        take = 10,
+        include: Prisma.SiteInclude = {},
+    ) {
         return this.site.findMany({
             skip,
             take,
             where: this.idFilter(userId),
+            include,
+            orderBy: { createdAt: "desc" },
         });
     }
 
-    create(
-        userId: number,
-        { dataSourceTableParsingTaskId, ...other }: CreateSiteDto,
-    ) {
+    // create(
+    //     userId: number,
+    //     { dataSourceTableParsingTaskId, ...other }: CreateSiteDto,
+    // ) {
+    //     return this.site.upsert({
+    //         where: { address: other.address },
+    //         create: {
+    //             ...other,
+    //             users: { connect: { id: userId } },
+    //             dataSourceTableParse: {
+    //                 connect: { id: dataSourceTableParsingTaskId },
+    //             },
+    //         },
+    //         update: {},
+    //     });
+    // }
+
+    upsert(userId: number, dto: CreateSiteDto) {
+        const { dataSourceTableParsingTaskId, ...other } = dto;
+
         return this.site.upsert({
             where: { address: other.address },
             create: {
                 ...other,
                 users: { connect: { id: userId } },
-                dataSourceTableParse: {
-                    connect: { id: dataSourceTableParsingTaskId },
+                dataSourceTableParse:
+                    dataSourceTableParsingTaskId !== undefined
+                        ? {
+                              connect: { id: dataSourceTableParsingTaskId },
+                          }
+                        : {},
+            },
+            update: {
+                users: {
+                    connect: {
+                        id: userId,
+                    },
                 },
             },
-            update: {},
-        });
-    }
-
-    upsert(
-        userId: number,
-        { dataSourceTableParsingTaskId, ...other }: CreateSiteDto,
-    ) {
-        return this.site.upsert({
-            where: { address: other.address },
-            create: {
-                ...other,
-                users: { connect: { id: userId } },
-                dataSourceTableParse: {
-                    connect: { id: dataSourceTableParsingTaskId },
-                },
-            },
-            update: {},
         });
     }
 

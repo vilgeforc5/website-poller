@@ -93,10 +93,12 @@ export class ParserWorkerService extends ChunkWorker<
                 const result = scheme.safeParse(url);
 
                 if (result.success) {
-                    return this.siteService.upsert(scope.userId, {
-                        dataSourceTableParsingTaskId: scope.taskId,
-                        address: url,
-                    });
+                    return this.siteService.upsert(scope.userId, [
+                        {
+                            dataSourceTableParsingTaskId: scope.taskId,
+                            address: url,
+                        },
+                    ]);
                 }
 
                 return Promise.resolve(undefined);

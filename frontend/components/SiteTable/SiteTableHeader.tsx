@@ -1,6 +1,6 @@
 import { Box, Grid, GridCol, Text } from "@mantine/core";
 
-export const ParseTableHeader = () => {
+export const SiteTableHeader = () => {
     return (
         <GridCol
             style={{ borderBottom: "1px solid var(--mantine-color-gray-4)" }}
@@ -10,17 +10,14 @@ export const ParseTableHeader = () => {
             <GridCol span={1}>
                 <Box w="xl" />
             </GridCol>
-            <GridCol span={5}>
+            <GridCol span={7}>
                 <ParseTableHeaderText>Адрес</ParseTableHeaderText>
             </GridCol>
             <GridCol span={2}>
-                <ParseTableHeaderText>Создана</ParseTableHeaderText>
+                <ParseTableHeaderText>Создан</ParseTableHeaderText>
             </GridCol>
             <GridCol span={2}>
-                <ParseTableHeaderText>Последний опрос</ParseTableHeaderText>
-            </GridCol>
-            <GridCol span={2}>
-                <ParseTableHeaderText>Пользователи</ParseTableHeaderText>
+                <ParseTableHeaderText>Последний код</ParseTableHeaderText>
             </GridCol>
         </GridCol>
     );

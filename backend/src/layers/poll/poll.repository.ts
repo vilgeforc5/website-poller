@@ -13,7 +13,7 @@ export class PollRepository {
     getCount(userId: number) {
         return this.poll.count({
             where: {
-                ...this.siteForUserFiler(userId),
+                ...this.siteForUserFilter(userId),
             },
         });
     }
@@ -21,7 +21,7 @@ export class PollRepository {
     getPositiveCodePollCount(userId: number, from?: Date, to?: Date) {
         return this.poll.count({
             where: {
-                ...this.siteForUserFiler(userId),
+                ...this.siteForUserFilter(userId),
                 statusCode: {
                     gte: 200,
                     lte: 299,
@@ -37,7 +37,7 @@ export class PollRepository {
     getTotalPollCount(userId: number, from?: Date, to?: Date) {
         return this.poll.count({
             where: {
-                ...this.siteForUserFiler(userId),
+                ...this.siteForUserFilter(userId),
                 createdAt: {
                     gte: from,
                     lte: to,
@@ -84,7 +84,7 @@ export class PollRepository {
         return percentPositiveToday - percentPositiveYesterday;
     }
 
-    private siteForUserFiler(userId: number) {
+    private siteForUserFilter(userId: number) {
         return {
             site: {
                 users: {

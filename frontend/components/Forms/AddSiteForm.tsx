@@ -1,19 +1,17 @@
 "use client";
 import { AddUrlListForm } from "@/components/Forms/AddUrlListForm";
 
-interface IAddParsingTableFormProps {
+interface AddSiteFormProps {
     onSubmitAction: (data: string[]) => Promise<boolean>;
 }
 
-export const AddParsingTableForm = ({
-    onSubmitAction,
-}: IAddParsingTableFormProps) => {
+export const AddSiteForm = ({ onSubmitAction }: AddSiteFormProps) => {
     return (
         <AddUrlListForm
             onSubmitAction={onSubmitAction}
-            label="Добавить Google таблицу"
+            label="Добавить сайт"
             description="По кнопке справа или нажатию Enter"
-            placeholder="https://docs.google.com/spreadsheets/"
+            placeholder="https://google.com/"
         />
     );
 };

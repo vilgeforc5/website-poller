@@ -12,7 +12,7 @@ export const routes: Array<{
     label: string;
 }> = [
     { href: routeLinks.dashboard, label: "Главная" },
-    { href: routeLinks.settings, label: "Настройки" },
-    { href: routeLinks.tables, label: "Парсинг" },
     { href: routeLinks.sites, label: "Сайты" },
+    { href: routeLinks.tables, label: "Парсинг" },
+    { href: routeLinks.settings, label: "Настройки" },
 ];

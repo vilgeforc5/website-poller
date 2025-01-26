@@ -1,7 +1,7 @@
 "use client";
 
 import { ConfirmationModal } from "@/components/Modals/ConfirmationModal";
-import { useTablesStore } from "@/store/store/table-store-provider";
+import { useTablesStore } from "@/store/store/table/table-store-provider";
 import { notifications } from "@mantine/notifications";
 import { reparseDataSourceTableAction } from "@/lib/actions/data-source-table/refreshDataSourceTableAction";
 

@@ -1,21 +1,17 @@
 import { ReactNode } from "react";
-import { PageTitle } from "@/components/PageTitle/PageTitle";
-import { revalidateTag } from "next/cache";
-import { revalidationKeys } from "@/lib/revalidationKeys";
+import { SiteStoreProvider } from "@/store/store/site/site-store-provider";
 
-export default function SitesLayout({ children }: { children: ReactNode }) {
+export default function SitesLayout({
+    children,
+    table,
+}: {
+    children: ReactNode;
+    table: ReactNode;
+}) {
     return (
-        <>
-            <PageTitle
-                mb="xl"
-                title="Cайты"
-                refresh={async () => {
-                    "use server";
-
-                    revalidateTag(revalidationKeys["sites"]);
-                }}
-            />
+        <SiteStoreProvider>
+            {table}
             {children}
-        </>
+        </SiteStoreProvider>
     );
 }

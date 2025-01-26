@@ -1,0 +1,47 @@
+import { Grid } from "@mantine/core";
+import { serverFetch } from "@/lib/serverFetch";
+import { revalidationKeys } from "@/lib/revalidationKeys";
+import { TablePagination } from "@/components/SiteTable/Pagination/TablePagination";
+import { SitesPerPageInput } from "@/components/SiteTable/SitesPerPageInput";
+import { SiteTableHeader } from "@/components/SiteTable/SiteTableHeader";
+import { ISiteInfo } from "backend/dist/layers/site/site.types";
+
+const sitesPerPageDefault = 50;
+
+interface ISiteTableProps {
+    sitesPerPage?: string;
+    page?: string;
+}
+
+export const SiteTable = async ({ sitesPerPage, page }: ISiteTableProps) => {
+    const siteCountPerPage =
+        parseInt(sitesPerPage || `${sitesPerPageDefault}`) ||
+        sitesPerPageDefault;
+    const pageNum = parseInt(page || "1") || 1;
+
+    const { data: totalSiteCount } = await serverFetch<number>(
+        "/site/total-count",
+        {
+            next: { tags: [revalidationKeys["sites"]] },
+        },
+    );
+    const { data: sites } = await serverFetch<ISiteInfo[]>(
+        `/site/get-paginated?limit=${siteCountPerPage}&skip=${(pageNum - 1) * siteCountPerPage}`,
+        {
+            next: { tags: [revalidationKeys["sites"]] },
+        },
+    );
+
+    console.log(sites);
+
+    return (
+        <Grid>
+            <SitesPerPageInput siteCountPerPage={siteCountPerPage} />
+            <SiteTableHeader />
+            <TablePagination
+                defaultValue={siteCountPerPage > totalSiteCount ? 1 : pageNum}
+                total={Math.ceil(totalSiteCount / siteCountPerPage)}
+            />
+        </Grid>
+    );
+};

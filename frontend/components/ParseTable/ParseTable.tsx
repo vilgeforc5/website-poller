@@ -1,5 +1,5 @@
 import { IDataSourceTableInfo } from "backend/src/layers/data-source-table/data-source-table.types";
-import { Grid } from "@mantine/core";
+import { Grid, Paper } from "@mantine/core";
 import { ParseTableHeader } from "@/components/ParseTable/ParseTableHeader";
 import { Row } from "@/components/ParseTable/Row/Row";
 import { serverFetch } from "@/lib/serverFetch";
@@ -14,11 +14,11 @@ export const ParseTable = async () => {
     );
 
     return (
-        <Grid>
+        <Paper shadow="sm" p="sm" component={Grid}>
             <ParseTableHeader />
             {data.map((table) => (
                 <Row key={table.url} row={table} />
             ))}
-        </Grid>
+        </Paper>
     );
 };

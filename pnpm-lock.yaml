@@ -31,7 +31,7 @@ importers:
         version: 11.0.0(@nestjs/common@10.4.15(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))
       '@nestjs/mapped-types':
         specifier: github:nestjs/mapped-types
-        version: https://codeload.github.com/nestjs/mapped-types/tar.gz/cdf5422072e2f3685d1befa4d707274ba69e32b4(@nestjs/common@10.4.15(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)
+        version: https://codeload.github.com/nestjs/mapped-types/tar.gz/0b04b5f49cb7f3b7c0b0bcacae2b546f7f138be6(@nestjs/common@10.4.15(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)
       '@nestjs/passport':
         specifier: ^11.0.2
         version: 11.0.3(@nestjs/common@10.4.15(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(passport@0.7.0)
@@ -222,6 +222,9 @@ importers:
       sass:
         specifier: ^1.83.4
         version: 1.83.4
+      use-debounce:
+        specifier: ^10.0.4
+        version: 10.0.4(react@19.0.0)
       zod:
         specifier: ^3.24.1
         version: 3.24.1
@@ -945,8 +948,8 @@ packages:
     peerDependencies:
       '@nestjs/common': ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0
 
-  '@nestjs/mapped-types@https://codeload.github.com/nestjs/mapped-types/tar.gz/cdf5422072e2f3685d1befa4d707274ba69e32b4':
-    resolution: {tarball: https://codeload.github.com/nestjs/mapped-types/tar.gz/cdf5422072e2f3685d1befa4d707274ba69e32b4}
+  '@nestjs/mapped-types@https://codeload.github.com/nestjs/mapped-types/tar.gz/0b04b5f49cb7f3b7c0b0bcacae2b546f7f138be6':
+    resolution: {tarball: https://codeload.github.com/nestjs/mapped-types/tar.gz/0b04b5f49cb7f3b7c0b0bcacae2b546f7f138be6}
     version: 2.1.0
     peerDependencies:
       '@nestjs/common': ^10.0.0 || ^11.0.0
@@ -4760,6 +4763,12 @@ packages:
       '@types/react':
         optional: true
 
+  use-debounce@10.0.4:
+    resolution: {integrity: sha512-6Cf7Yr7Wk7Kdv77nnJMf6de4HuDE4dTxKij+RqE9rufDsI6zsbjyAxcH5y2ueJCQAnfgKbzXbZHYlkFwmBlWkw==}
+    engines: {node: '>= 16.0.0'}
+    peerDependencies:
+      react: '*'
+
   use-isomorphic-layout-effect@1.2.0:
     resolution: {integrity: sha512-q6ayo8DWoPZT0VdG4u3D3uxcgONP3Mevx2i2b0434cwWBoL+aelL1DzkXI6w3PhTZzUeR2kaVlZn70iCiseP6w==}
     peerDependencies:
@@ -5780,7 +5789,7 @@ snapshots:
       '@types/jsonwebtoken': 9.0.7
       jsonwebtoken: 9.0.2
 
-  '@nestjs/mapped-types@https://codeload.github.com/nestjs/mapped-types/tar.gz/cdf5422072e2f3685d1befa4d707274ba69e32b4(@nestjs/common@10.4.15(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)':
+  '@nestjs/mapped-types@https://codeload.github.com/nestjs/mapped-types/tar.gz/0b04b5f49cb7f3b7c0b0bcacae2b546f7f138be6(@nestjs/common@10.4.15(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)':
     dependencies:
       '@nestjs/common': 10.4.15(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       reflect-metadata: 0.2.2
@@ -10306,6 +10315,10 @@ snapshots:
       react: 19.0.0
     optionalDependencies:
       '@types/react': 19.0.7
+
+  use-debounce@10.0.4(react@19.0.0):
+    dependencies:
+      react: 19.0.0
 
   use-isomorphic-layout-effect@1.2.0(@types/react@19.0.7)(react@19.0.0):
     dependencies:
