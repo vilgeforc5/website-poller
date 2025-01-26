@@ -9,6 +9,7 @@ export const TablePagination = ({
 }: {
     total: number;
     defaultValue: number;
+    max: number;
 }) => {
     const router = useRouter();
     const pathname = usePathname();

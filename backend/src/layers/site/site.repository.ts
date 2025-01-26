@@ -71,7 +71,9 @@ export class SiteRepository {
 
     count(userId: number) {
         return this.site.count({
-            where: this.idFilter(userId),
+            where: {
+                ...this.idFilter(userId),
+            },
         });
     }
 

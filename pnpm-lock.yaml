@@ -59,6 +59,9 @@ importers:
       class-validator:
         specifier: ^0.14.1
         version: 0.14.1
+      cron:
+        specifier: ^3.5.0
+        version: 3.5.0
       google-spreadsheet:
         specifier: ^4.1.4
         version: 4.1.4

@@ -7,15 +7,15 @@ import { AuthModule } from "src/auth/auth.module";
 import { AtGuard } from "src/common/guards/at.guard";
 import { APP_GUARD } from "@nestjs/core";
 import { PollerModule } from "./workers/poller/poller.module";
-import { ScheduleModule } from "@nestjs/schedule";
 import { PollingTaskModule } from "./layers/polling-task/polling-task.module";
 import { DataSourceTableModule } from "./layers/data-source-table/data-source-table.module";
 import { DataSourceTableParserModule } from "./workers/data-source-table-parser/data-source-table-parser.module";
-import { DataSourceTableTaskModule } from './layers/data-source-table-task/data-source-table-task.module';
+import { DataSourceTableTaskModule } from "./layers/data-source-table-task/data-source-table-task.module";
+import { ConfigModule as AppConfigModule } from "./layers/config/config.module";
+import { SchedulerModule } from "src/workers/cron/scheduler.module";
 
 @Module({
     imports: [
-        ScheduleModule.forRoot(),
         ConfigModule.forRoot({ isGlobal: true }),
         LoggerModule.forRoot(),
         SiteModule,
@@ -26,6 +26,8 @@ import { DataSourceTableTaskModule } from './layers/data-source-table-task/data-
         DataSourceTableModule,
         DataSourceTableParserModule,
         DataSourceTableTaskModule,
+        AppConfigModule,
+        SchedulerModule,
     ],
     providers: [
         {

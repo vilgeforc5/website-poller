@@ -40,14 +40,13 @@ export class SiteController {
 
     @HttpCode(HttpStatus.OK)
     @Get("get-paginated")
-    async get(
+    async getPaginated(
         @GetCurrentUserId() userId: number,
         @Query()
         params: {
             skip: string;
             limit: string;
             take: string;
-            codes: string;
         },
     ): Promise<ISiteInfo[]> {
         const skip = parseInt(params.skip);
@@ -58,38 +57,32 @@ export class SiteController {
             throw new BadRequestException();
         }
 
-        const sites = await this.siteService.getPaginated(userId, skip, limit, {
-            polls: {
-                select: {
-                    statusCode: true,
-                    retryCount: true,
-                    requestMethod: true,
-                    createdAt: true,
-                    id: true,
+        const sites = await this.siteService.getPaginated(
+            userId,
+            skip,
+            limit,
+            {
+                polls: {
+                    select: {
+                        statusCode: true,
+                        retryCount: true,
+                        requestMethod: true,
+                        createdAt: true,
+                        id: true,
+                    },
+                    take,
+                    orderBy: {
+                        createdAt: "desc",
+                    },
                 },
-                take,
-                orderBy: {
-                    createdAt: "desc",
-                },
+                users: { select: { email: true } },
             },
-            users: { select: { email: true } },
-        });
+            {},
+        );
 
-        const withStatusCode = sites.map((site) => ({
+        return sites.map((site) => ({
             ...site,
             lastStatusCode: site.polls.at(0)?.statusCode,
         }));
-
-        const codes = params.codes ? params.codes.split(".") : [];
-
-        return codes.length === 0
-            ? withStatusCode
-            : withStatusCode.filter(
-                  (site) =>
-                      site.lastStatusCode &&
-                      codes.includes(
-                          site.lastStatusCode.toString().at(0) || "",
-                      ),
-              );
     }
 }

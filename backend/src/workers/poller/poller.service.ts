@@ -4,6 +4,7 @@ import { PollerWorker } from "src/workers/poller/poller-worker/poller.worker";
 import { PollingTaskService } from "src/layers/polling-task/polling-task.service";
 import { TriggerManualPollDto } from "src/workers/poller/dto/trigger-manual.dto";
 import { EnumRequestMethod } from "@prisma/client";
+import { ConfigService } from "src/layers/config/config.service";
 
 @Injectable()
 export class PollerService {
@@ -11,6 +12,7 @@ export class PollerService {
         private readonly logger: PinoLogger,
         private readonly pollingTaskService: PollingTaskService,
         private readonly worker: PollerWorker,
+        private readonly config: ConfigService,
     ) {
         logger.setContext(PollerService.name);
     }
@@ -33,7 +35,15 @@ export class PollerService {
             requestMethod: dto?.method,
         });
 
-        this.startTask(userId, task.id, dto?.method, dto?.parallelProcessCount);
+        const config = await this.config.get();
+
+        this.startTask(
+            userId,
+            task.id,
+            config?.requestMethod,
+            config?.parallelSitesCount,
+            config?.retryCount,
+        );
 
         return { id: task.id };
     }
@@ -43,6 +53,7 @@ export class PollerService {
         pollingTaskId: number,
         requestMethod: EnumRequestMethod = "HEAD",
         parallelProcessCount = 10,
+        retryCount = 5,
     ) {
         try {
             const result = await this.worker.work({
@@ -50,6 +61,7 @@ export class PollerService {
                 pollingTaskId,
                 requestMethod,
                 parallelProcessCount,
+                retryCount,
             });
 
             if (!result.ok) {

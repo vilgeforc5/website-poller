@@ -83,6 +83,16 @@ model DataSourceTableParsingTask {
   dataSourceTableId Int
 }
 
+model Config {
+  id                 String            @id
+  retryCount         Int               @default(5)
+  headers            Json?
+  pollPerDay         Int               @default(5)
+  parallelSitesCount Int               @default(10)
+  parsePerDay        Int               @default(5)
+  requestMethod      EnumRequestMethod @default(GET)
+}
+
 enum DataSourceTableProvider {
   GOOGLE
 }

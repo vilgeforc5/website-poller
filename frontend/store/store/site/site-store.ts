@@ -3,6 +3,7 @@ import { createStore } from "zustand/vanilla";
 export type SiteState = {
     startPollModalOpen: boolean;
     openedDropdowns: number[];
+    filteredStatusCodes: number[];
 };
 
 export type SiteActions = {
@@ -12,6 +13,7 @@ export type SiteActions = {
     openDropDown: (id: number) => void;
     closeDropDown: (id: number) => void;
     toggleDropDown: (id: number) => void;
+    handleStatusCode: (code: number) => void;
 };
 
 export type SiteStore = SiteState & SiteActions;
@@ -19,6 +21,7 @@ export type SiteStore = SiteState & SiteActions;
 export const defaultInitState: SiteState = {
     startPollModalOpen: false,
     openedDropdowns: [],
+    filteredStatusCodes: [200, 300, 400, 500],
 };
 
 export const createSiteStore = (initState: SiteState = defaultInitState) => {
@@ -59,6 +62,23 @@ export const createSiteStore = (initState: SiteState = defaultInitState) => {
                               (dropDown) => dropDown !== tableId,
                           )
                         : [...state.openedDropdowns, tableId],
+                };
+            }),
+        handleStatusCode: (code: number) =>
+            set((state) => {
+                let newCodes = [...state.filteredStatusCodes];
+
+                if (newCodes.includes(code)) {
+                    newCodes = newCodes.filter((codePrev) => codePrev !== code);
+                } else {
+                    newCodes.push(code);
+                }
+
+                return {
+                    ...state,
+                    filteredStatusCodes: newCodes.length
+                        ? newCodes
+                        : defaultInitState.filteredStatusCodes,
                 };
             }),
     }));

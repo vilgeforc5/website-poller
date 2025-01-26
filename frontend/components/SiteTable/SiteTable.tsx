@@ -13,14 +13,9 @@ const sitesPerPageDefault = 50;
 interface ISiteTableProps {
     sitesPerPage?: string;
     page?: string;
-    codes?: string;
 }
 
-export const SiteTable = async ({
-    sitesPerPage,
-    page,
-    codes,
-}: ISiteTableProps) => {
+export const SiteTable = async ({ sitesPerPage, page }: ISiteTableProps) => {
     const siteCountPerPage =
         parseInt(sitesPerPage || `${sitesPerPageDefault}`) ||
         sitesPerPageDefault;
@@ -33,7 +28,7 @@ export const SiteTable = async ({
         },
     );
     const { data: sites } = await serverFetch<ISiteInfo[]>(
-        `/site/get-paginated?limit=${siteCountPerPage}&skip=${(pageNum - 1) * siteCountPerPage}&take=5&codes=${codes || ""}`,
+        `/site/get-paginated?limit=${siteCountPerPage}&skip=${(pageNum - 1) * siteCountPerPage}&take=5`,
         {
             next: { tags: [revalidationKeys["sites"]] },
         },
@@ -42,7 +37,10 @@ export const SiteTable = async ({
     return (
         <Grid>
             <Group>
-                <SitesPerPageInput siteCountPerPage={siteCountPerPage} />
+                <SitesPerPageInput
+                    max={totalSiteCount}
+                    siteCountPerPage={siteCountPerPage}
+                />
                 <CodeFilterGroup />
             </Group>
             <SiteTableHeader />
@@ -52,6 +50,7 @@ export const SiteTable = async ({
             <TablePagination
                 defaultValue={siteCountPerPage > totalSiteCount ? 1 : pageNum}
                 total={Math.ceil(totalSiteCount / siteCountPerPage)}
+                max={totalSiteCount}
             />
         </Grid>
     );

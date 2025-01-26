@@ -37,6 +37,7 @@ interface PollerWorkerScope {
     userId: number;
     requestMethod: EnumRequestMethod;
     parallelProcessCount: number;
+    retryCount: number;
 }
 
 @Injectable()
@@ -121,12 +122,13 @@ export class PollerWorker extends ChunkWorker<
 
     async processChunk(
         sites: PollerWorkerSourceData[],
-        { requestMethod, pollingTaskId }: PollerWorkerScope,
+        { requestMethod, pollingTaskId, retryCount }: PollerWorkerScope,
     ) {
         return new Promise((res) => {
             this.pollWebsites(
                 sites.map((site) => site.address),
                 requestMethod,
+                retryCount,
             ).subscribe(async (poll) => {
                 const polls = poll
                     .map((data) => {

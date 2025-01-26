@@ -7,8 +7,10 @@ const step = 10;
 
 export const SitesPerPageInput = ({
     siteCountPerPage,
+    max,
 }: {
     siteCountPerPage: number;
+    max: number;
 }) => {
     const router = useRouter();
     const pathname = usePathname();
@@ -23,6 +25,7 @@ export const SitesPerPageInput = ({
 
     return (
         <NumberInput
+            max={max}
             w="fit-content"
             radius="md"
             step={step}

@@ -16,11 +16,7 @@ export default async function SitesTablePage({
 
     return (
         <Stack>
-            <SiteTable
-                sitesPerPage={params.sitesPerPage}
-                page={params.page}
-                codes={params.codes}
-            />
+            <SiteTable sitesPerPage={params.sitesPerPage} page={params.page} />
             <AddSiteForm onSubmitAction={createSitesAction} />
         </Stack>
     );
