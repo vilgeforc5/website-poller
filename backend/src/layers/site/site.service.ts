@@ -29,8 +29,15 @@ export class SiteService {
         skip = 0,
         take = 5,
         include: Prisma.SiteInclude = {},
+        where: Prisma.SiteWhereInput = {},
     ) {
-        return this.siteRepository.getPaginated(userId, skip, take, include);
+        return this.siteRepository.getPaginated(
+            userId,
+            skip,
+            take,
+            include,
+            where,
+        );
     }
 
     async getLatestInfo(userId: number): Promise<ISiteLatestInfo> {

@@ -78,9 +78,7 @@ export class PollerWorker extends ChunkWorker<
                         retryCount,
                     })),
                     tap((data) => {
-                        console.log("after map");
                         console.log(data);
-                        return data;
                     }),
                     retryWhen((errors) =>
                         errors.pipe(

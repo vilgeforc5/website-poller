@@ -1,4 +1,4 @@
-import { Grid } from "@mantine/core";
+import { Grid, Group } from "@mantine/core";
 import { serverFetch } from "@/lib/serverFetch";
 import { revalidationKeys } from "@/lib/revalidationKeys";
 import { TablePagination } from "@/components/SiteTable/Pagination/TablePagination";
@@ -6,15 +6,21 @@ import { SitesPerPageInput } from "@/components/SiteTable/SitesPerPageInput";
 import { SiteTableHeader } from "@/components/SiteTable/SiteTableHeader";
 import { ISiteInfo } from "backend/dist/layers/site/site.types";
 import { SiteTableRow } from "@/components/SiteTable/Row/Row";
+import { CodeFilterGroup } from "@/components/CodeFilterGroup/CodeFilterGroup";
 
 const sitesPerPageDefault = 50;
 
 interface ISiteTableProps {
     sitesPerPage?: string;
     page?: string;
+    codes?: string;
 }
 
-export const SiteTable = async ({ sitesPerPage, page }: ISiteTableProps) => {
+export const SiteTable = async ({
+    sitesPerPage,
+    page,
+    codes,
+}: ISiteTableProps) => {
     const siteCountPerPage =
         parseInt(sitesPerPage || `${sitesPerPageDefault}`) ||
         sitesPerPageDefault;
@@ -27,17 +33,18 @@ export const SiteTable = async ({ sitesPerPage, page }: ISiteTableProps) => {
         },
     );
     const { data: sites } = await serverFetch<ISiteInfo[]>(
-        `/site/get-paginated?limit=${siteCountPerPage}&skip=${(pageNum - 1) * siteCountPerPage}`,
+        `/site/get-paginated?limit=${siteCountPerPage}&skip=${(pageNum - 1) * siteCountPerPage}&take=5&codes=${codes || ""}`,
         {
             next: { tags: [revalidationKeys["sites"]] },
         },
     );
 
-    // console.log(sites);
-
     return (
         <Grid>
-            <SitesPerPageInput siteCountPerPage={siteCountPerPage} />
+            <Group>
+                <SitesPerPageInput siteCountPerPage={siteCountPerPage} />
+                <CodeFilterGroup />
+            </Group>
             <SiteTableHeader />
             {sites.map((site) => (
                 <SiteTableRow key={site.address} row={site} />

@@ -16,11 +16,12 @@ export class SiteRepository {
         skip = 0,
         take = 10,
         include: Prisma.SiteInclude = {},
+        where: Prisma.SiteWhereInput = {},
     ) {
         return this.site.findMany({
             skip,
             take,
-            where: this.idFilter(userId),
+            where: { ...where, ...this.idFilter(userId) },
             include,
             orderBy: { createdAt: "desc" },
         });

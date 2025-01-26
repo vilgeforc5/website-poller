@@ -23,8 +23,8 @@ export const CodesChart = ({ data, ...others }: CodesChartProps) => {
                 dataKey="date"
                 series={[
                     { name: "200", color: "green.5" },
-                    { name: "300", color: "green.3" },
-                    { name: "400", color: "yellow.5" },
+                    { name: "300", color: "yellow.3" },
+                    { name: "400", color: "orange.5" },
                     { name: "500", color: "red.5" },
                 ]}
                 tickLine="y"

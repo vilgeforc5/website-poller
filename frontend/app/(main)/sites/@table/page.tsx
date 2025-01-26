@@ -6,13 +6,21 @@ import { createSitesAction } from "@/lib/actions/site/createSiteAction";
 export default async function SitesTablePage({
     searchParams,
 }: {
-    searchParams: Promise<{ sitesPerPage?: string; page?: string }>;
+    searchParams: Promise<{
+        sitesPerPage?: string;
+        page?: string;
+        codes?: string;
+    }>;
 }) {
     const params = await searchParams;
 
     return (
         <Stack>
-            <SiteTable sitesPerPage={params.sitesPerPage} page={params.page} />
+            <SiteTable
+                sitesPerPage={params.sitesPerPage}
+                page={params.page}
+                codes={params.codes}
+            />
             <AddSiteForm onSubmitAction={createSitesAction} />
         </Stack>
     );

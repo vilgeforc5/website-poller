@@ -40,27 +40,56 @@ export class SiteController {
 
     @HttpCode(HttpStatus.OK)
     @Get("get-paginated")
-    get(
+    async get(
         @GetCurrentUserId() userId: number,
-        @Query() params: { skip: string; limit: string },
+        @Query()
+        params: {
+            skip: string;
+            limit: string;
+            take: string;
+            codes: string;
+        },
     ): Promise<ISiteInfo[]> {
         const skip = parseInt(params.skip);
         const limit = parseInt(params.limit);
+        const take = parseInt(params.take) || 20;
 
         if (isNaN(skip) || isNaN(limit)) {
             throw new BadRequestException();
         }
 
-        return this.siteService.getPaginated(userId, skip, limit, {
+        const sites = await this.siteService.getPaginated(userId, skip, limit, {
             polls: {
                 select: {
                     statusCode: true,
                     retryCount: true,
                     requestMethod: true,
+                    createdAt: true,
+                    id: true,
                 },
-                take: 20,
+                take,
+                orderBy: {
+                    createdAt: "desc",
+                },
             },
             users: { select: { email: true } },
         });
+
+        const withStatusCode = sites.map((site) => ({
+            ...site,
+            lastStatusCode: site.polls.at(0)?.statusCode,
+        }));
+
+        const codes = params.codes ? params.codes.split(".") : [];
+
+        return codes.length === 0
+            ? withStatusCode
+            : withStatusCode.filter(
+                  (site) =>
+                      site.lastStatusCode &&
+                      codes.includes(
+                          site.lastStatusCode.toString().at(0) || "",
+                      ),
+              );
     }
 }

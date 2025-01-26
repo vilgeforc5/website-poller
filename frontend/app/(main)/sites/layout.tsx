@@ -6,14 +6,21 @@ import { revalidationKeys } from "@/lib/revalidationKeys";
 import { Group } from "@mantine/core";
 import { StartPollButtonWrapper } from "@/components/ActionButton/StartPollButtonWrapper";
 import { StartPollModal } from "@/components/Modals/Site/StartPollModal";
+import { serverFetch } from "@/lib/serverFetch";
+import { IPollingTaskLatestInfo } from "backend/dist/layers/polling-task/polling-task.types";
 
-export default function SitesLayout({
+export default async function SitesLayout({
     children,
     table,
 }: {
     children: ReactNode;
     table: ReactNode;
 }) {
+    const { data } = await serverFetch<IPollingTaskLatestInfo>(
+        "/polling-task/latest-info",
+    );
+    const lastTime = data.lastTaskTime;
+
     return (
         <SiteStoreProvider>
             <StartPollModal />
@@ -21,6 +28,10 @@ export default function SitesLayout({
                 <PageTitle
                     mb="xl"
                     title="Cайты"
+                    description={
+                        lastTime &&
+                        `Последнее обновление в ${new Date(lastTime).toLocaleString()}`
+                    }
                     refresh={async () => {
                         "use server";
 

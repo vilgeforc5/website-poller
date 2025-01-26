@@ -2,6 +2,8 @@ import { ISiteInfo } from "backend/dist/layers/site/site.types";
 import { Anchor, Grid, GridCol, List, ListItem, Text } from "@mantine/core";
 import { RowControls } from "@/components/SiteTable/Row/RowControls";
 import { isUserAdmin } from "@/lib/serverJwtValues";
+import { PollsDropDown } from "@/components/SiteTable/Row/PollsDropDown/PollsDropDown";
+import { CodeStatusBadge } from "@/components/SiteTable/Row/CodeStatusBadge";
 
 interface ISiteTableRowProps {
     row: ISiteInfo;
@@ -45,7 +47,11 @@ export const SiteTableRow = async ({ row }: ISiteTableRowProps) => {
                     <Text>{new Date(row.createdAt).toLocaleString()}</Text>
                 </GridCol>
                 <GridCol span={2}>
-                    {/*{lastPolled ? new Date(lastPolled).toLocaleString() : "-"}*/}
+                    {row.lastStatusCode ? (
+                        <CodeStatusBadge code={row.lastStatusCode} />
+                    ) : (
+                        "-"
+                    )}
                 </GridCol>
                 {isAdmin && (
                     <GridCol span={2}>
@@ -57,6 +63,7 @@ export const SiteTableRow = async ({ row }: ISiteTableRowProps) => {
                     </GridCol>
                 )}
             </Grid>
+            <PollsDropDown id={row.id} polls={row.polls} />
         </Grid>
     );
 };

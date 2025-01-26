@@ -36,9 +36,7 @@ export const RowControls = ({ id, disableDropDown }: IRowControlsProps) => {
                     style={{
                         width: "70%",
                         height: "70%",
-                        transform: isDropDownOpen
-                            ? "rotate(-180deg)"
-                            : "initial",
+                        transform: isDropDownOpen ? "rotate(-180deg)" : "",
                     }}
                     stroke={2.5}
                 />

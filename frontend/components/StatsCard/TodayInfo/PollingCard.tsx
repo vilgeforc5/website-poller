@@ -15,7 +15,7 @@ export const PollingCard = async () => {
             value={data.count}
             description={
                 lastTime
-                    ? `Последний опрос: ${new Date(lastTime).toLocaleDateString()}`
+                    ? `Последний опрос: ${new Date(lastTime).toLocaleString()}`
                     : undefined
             }
         />
