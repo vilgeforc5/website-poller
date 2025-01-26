@@ -39,4 +39,10 @@ export class UsersService {
 
         return this.userRepository.update(id, updateUserDto);
     }
+
+    async isAdmin(id: number) {
+        const user = await this.userRepository.getUserRole(id);
+
+        return user?.role === "ADMIN" || user?.role === "OWNER";
+    }
 }

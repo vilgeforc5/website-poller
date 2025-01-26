@@ -2,47 +2,36 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateSiteDto } from "src/layers/site/dto/create-site.dto";
 import { Prisma, PrismaClient } from "@prisma/client";
+import { UsersService } from "src/layers/users/users.service";
 
 @Injectable()
 export class SiteRepository {
     private readonly site: PrismaClient["site"];
 
-    constructor(prismaService: PrismaService) {
+    constructor(
+        prismaService: PrismaService,
+        private readonly userService: UsersService,
+    ) {
         this.site = prismaService.site;
     }
 
-    getPaginated(
+    async getPaginated(
         userId: number,
         skip = 0,
         take = 10,
         include: Prisma.SiteInclude = {},
         where: Prisma.SiteWhereInput = {},
     ) {
+        const filter = await this.idFilter(userId);
+
         return this.site.findMany({
             skip,
             take,
-            where: { ...where, ...this.idFilter(userId) },
+            where: { ...where, ...filter },
             include,
             orderBy: { createdAt: "desc" },
         });
     }
-
-    // create(
-    //     userId: number,
-    //     { dataSourceTableParsingTaskId, ...other }: CreateSiteDto,
-    // ) {
-    //     return this.site.upsert({
-    //         where: { address: other.address },
-    //         create: {
-    //             ...other,
-    //             users: { connect: { id: userId } },
-    //             dataSourceTableParse: {
-    //                 connect: { id: dataSourceTableParsingTaskId },
-    //             },
-    //         },
-    //         update: {},
-    //     });
-    // }
 
     upsert(userId: number, dto: CreateSiteDto) {
         const { dataSourceTableParsingTaskId, ...other } = dto;
@@ -69,29 +58,34 @@ export class SiteRepository {
         });
     }
 
-    count(userId: number) {
+    async count(userId: number) {
+        const filter = await this.idFilter(userId);
+
         return this.site.count({
             where: {
-                ...this.idFilter(userId),
+                ...filter,
             },
         });
     }
 
-    getLatestRecord(userId: number) {
+    async getLatestRecord(userId: number) {
+        const filter = await this.idFilter(userId);
+
         return this.site.findFirst({
             orderBy: { createdAt: "desc" },
-            where: this.idFilter(userId),
+            where: filter,
         });
     }
 
-    getCountDifference(userId: number, daysBefore = 1) {
+    async getCountDifference(userId: number, daysBefore = 1) {
+        const filter = await this.idFilter(userId);
         const currentDate = new Date();
         const pastDate = new Date();
         pastDate.setDate(currentDate.getDate() - daysBefore);
 
         return this.site.count({
             where: {
-                ...this.idFilter(userId),
+                ...filter,
                 createdAt: {
                     gte: pastDate,
                     lte: currentDate,
@@ -100,7 +94,9 @@ export class SiteRepository {
         });
     }
 
-    private idFilter(userId: number) {
-        return { users: { some: { id: userId } } };
+    private async idFilter(userId: number) {
+        const isAdmin = await this.userService.isAdmin(userId);
+
+        return !isAdmin ? { users: { some: { id: userId } } } : {};
     }
 }

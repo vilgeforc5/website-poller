@@ -27,6 +27,7 @@ export const SiteTable = async ({ sitesPerPage, page }: ISiteTableProps) => {
             next: { tags: [revalidationKeys["sites"]] },
         },
     );
+
     const { data: sites } = await serverFetch<ISiteInfo[]>(
         `/site/get-paginated?limit=${siteCountPerPage}&skip=${(pageNum - 1) * siteCountPerPage}&take=5`,
         {
@@ -36,7 +37,7 @@ export const SiteTable = async ({ sitesPerPage, page }: ISiteTableProps) => {
 
     return (
         <Grid>
-            <Group>
+            <Group mb="md">
                 <SitesPerPageInput
                     max={totalSiteCount}
                     siteCountPerPage={siteCountPerPage}

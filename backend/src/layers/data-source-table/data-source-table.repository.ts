@@ -3,12 +3,16 @@ import { PrismaService } from "src/prisma/prisma.service";
 import { CreateDataSourceTableDto } from "src/layers/data-source-table/dto/create-data-source-table.dto";
 import { PrismaClient } from "@prisma/client";
 import { DeleteDataSourceTableDto } from "src/layers/data-source-table/dto/delete-data-source-table.dto";
+import { UsersService } from "src/layers/users/users.service";
 
 @Injectable()
 export class DataSourceTableRepository {
     private readonly dataSourceTable: PrismaClient["dataSourceTable"];
 
-    constructor(private readonly prismaService: PrismaService) {
+    constructor(
+        prismaService: PrismaService,
+        private readonly usersService: UsersService,
+    ) {
         this.dataSourceTable = prismaService.dataSourceTable;
     }
 
@@ -29,10 +33,12 @@ export class DataSourceTableRepository {
         });
     }
 
-    getInfo(userId: number) {
+    async getInfo(userId: number) {
+        const filters = await this.getCommonUserIdFilter(userId);
+
         return this.dataSourceTable.findMany({
             where: {
-                users: this.getCommonUserIdFilter(userId),
+                users: filters,
             },
             select: {
                 id: true,
@@ -64,9 +70,11 @@ export class DataSourceTableRepository {
         });
     }
 
-    getById(userId: number, tableId: number) {
+    async getById(userId: number, tableId: number) {
+        const filters = await this.getCommonUserIdFilter(userId);
+
         return this.dataSourceTable.findFirst({
-            where: { users: this.getCommonUserIdFilter(userId), id: tableId },
+            where: { users: filters, id: tableId },
         });
     }
 
@@ -85,7 +93,9 @@ export class DataSourceTableRepository {
         });
     }
 
-    private getCommonUserIdFilter(id: number) {
-        return { some: { id } };
+    private async getCommonUserIdFilter(id: number) {
+        const isAdmin = await this.usersService.isAdmin(id);
+
+        return !isAdmin ? { some: { id } } : {};
     }
 }

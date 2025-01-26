@@ -3,12 +3,16 @@ import { PrismaService } from "src/prisma/prisma.service";
 import { CreateDataSourceTableTaskDto } from "src/layers/data-source-table-task/dto/create-data-source-table-task.dto";
 import { UpdateDataSourceTableTaskDto } from "src/layers/data-source-table-task/dto/update-data-source-table-task.dto";
 import { PrismaClient } from "@prisma/client";
+import { UsersService } from "src/layers/users/users.service";
 
 @Injectable()
 export class DataSourceTableTaskRepository {
     dataSourceTableTask: PrismaClient["dataSourceTableParsingTask"];
 
-    constructor(prismaService: PrismaService) {
+    constructor(
+        prismaService: PrismaService,
+        private readonly userService: UsersService,
+    ) {
         this.dataSourceTableTask = prismaService.dataSourceTableParsingTask;
     }
 
@@ -32,11 +36,13 @@ export class DataSourceTableTaskRepository {
         });
     }
 
-    get(userId: number, id: number) {
+    async get(userId: number, id: number) {
+        const filters = await this.getUserIdFilter(userId);
+
         return this.dataSourceTableTask.findUnique({
             where: {
                 id,
-                addedSites: { some: { users: { some: { id: userId } } } },
+                addedSites: { some: { ...filters } },
             },
             include: {
                 addedSites: {
@@ -48,10 +54,12 @@ export class DataSourceTableTaskRepository {
         });
     }
 
-    getAll(userId: number) {
+    async getAll(userId: number) {
+        const filters = await this.getUserIdFilter(userId);
+
         return this.dataSourceTableTask.findMany({
             where: {
-                addedSites: { some: { users: { some: { id: userId } } } },
+                addedSites: { some: { ...filters } },
             },
             include: {
                 addedSites: {
@@ -63,7 +71,9 @@ export class DataSourceTableTaskRepository {
         });
     }
 
-    getNumberOfTasksToday(userId: number) {
+    async getNumberOfTasksToday(userId: number) {
+        const filters = await this.getUserIdFilter(userId);
+
         const todayStart = new Date();
         todayStart.setHours(0, 0, 0, 0);
 
@@ -77,30 +87,38 @@ export class DataSourceTableTaskRepository {
                     lte: todayEnd,
                 },
                 dataSourceTable: {
-                    users: {
-                        some: {
-                            id: userId,
-                        },
-                    },
+                    ...filters,
                 },
             },
         });
     }
 
     async getLastTask(userId: number) {
+        const filters = await this.getUserIdFilter(userId);
+
         return await this.dataSourceTableTask.findFirst({
             orderBy: {
                 startTime: "desc",
             },
             where: {
                 dataSourceTable: {
-                    users: {
-                        some: {
-                            id: userId,
-                        },
-                    },
+                    ...filters,
                 },
             },
         });
+    }
+
+    async getUserIdFilter(userId: number) {
+        const isAdmin = await this.userService.isAdmin(userId);
+
+        return !isAdmin
+            ? {
+                  users: {
+                      some: {
+                          id: userId,
+                      },
+                  },
+              }
+            : {};
     }
 }

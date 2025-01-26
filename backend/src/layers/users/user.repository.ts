@@ -46,4 +46,11 @@ export class UserRepository {
             },
         });
     }
+
+    getUserRole(userId: number) {
+        return this.user.findUnique({
+            where: { id: userId },
+            select: { role: true },
+        });
+    }
 }

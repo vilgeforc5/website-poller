@@ -1,27 +1,35 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { PrismaClient } from "@prisma/client";
+import { UsersService } from "src/layers/users/users.service";
 
 @Injectable()
 export class PollRepository {
     private readonly poll: PrismaClient["poll"];
 
-    constructor(private readonly prismaService: PrismaService) {
+    constructor(
+        private readonly prismaService: PrismaService,
+        private readonly userService: UsersService,
+    ) {
         this.poll = prismaService.poll;
     }
 
-    getCount(userId: number) {
+    async getCount(userId: number) {
+        const filters = await this.siteForUserFilter(userId);
+
         return this.poll.count({
             where: {
-                ...this.siteForUserFilter(userId),
+                ...filters,
             },
         });
     }
 
-    getPositiveCodePollCount(userId: number, from?: Date, to?: Date) {
+    async getPositiveCodePollCount(userId: number, from?: Date, to?: Date) {
+        const filters = await this.siteForUserFilter(userId);
+
         return this.poll.count({
             where: {
-                ...this.siteForUserFilter(userId),
+                ...filters,
                 statusCode: {
                     gte: 200,
                     lte: 299,
@@ -34,13 +42,15 @@ export class PollRepository {
         });
     }
 
-    getTodayInfo(userId: number) {
+    async getTodayInfo(userId: number) {
+        const filters = await this.siteForUserFilter(userId);
+
         const todayStart = new Date();
         todayStart.setHours(0, 0, 0, 0);
 
         return this.poll.findMany({
             where: {
-                ...this.siteForUserFilter(userId),
+                ...filters,
                 createdAt: {
                     gte: todayStart,
                 },
@@ -59,10 +69,12 @@ export class PollRepository {
         });
     }
 
-    getTotalPollCount(userId: number, from?: Date, to?: Date) {
+    async getTotalPollCount(userId: number, from?: Date, to?: Date) {
+        const filters = await this.siteForUserFilter(userId);
+
         return this.poll.count({
             where: {
-                ...this.siteForUserFilter(userId),
+                ...filters,
                 createdAt: {
                     gte: from,
                     lte: to,
@@ -89,7 +101,7 @@ export class PollRepository {
             positivePollsToday,
             totalPollsYesterday,
             positivePollsYesterday,
-        ] = await this.prismaService.$transaction([
+        ] = await Promise.all([
             this.getTotalPollCount(userId, todayStart, todayEnd),
             this.getPositiveCodePollCount(userId, todayStart, todayEnd),
             this.getTotalPollCount(userId, yesterdayStart, yesterdayEnd),
@@ -109,15 +121,19 @@ export class PollRepository {
         return percentPositiveToday - percentPositiveYesterday;
     }
 
-    private siteForUserFilter(userId: number) {
-        return {
-            site: {
-                users: {
-                    some: {
-                        id: userId,
-                    },
-                },
-            },
-        };
+    private async siteForUserFilter(userId: number) {
+        const isAdmin = await this.userService.isAdmin(userId);
+
+        return !isAdmin
+            ? {
+                  site: {
+                      users: {
+                          some: {
+                              id: userId,
+                          },
+                      },
+                  },
+              }
+            : {};
     }
 }
