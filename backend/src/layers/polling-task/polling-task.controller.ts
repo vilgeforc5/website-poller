@@ -9,4 +9,9 @@ export class PollingTaskController {
     getLatestInfo() {
         return this.pollingTaskService.getLatestInfo();
     }
+
+    @Get("has-running-tasks")
+    getHasRunningTasks() {
+        return this.pollingTaskService.hasRunningTask();
+    }
 }

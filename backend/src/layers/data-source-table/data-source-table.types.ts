@@ -1,4 +1,4 @@
-import { WorkingState } from "@prisma/client";
+import { UpdateTrigger, WorkingState } from "@prisma/client";
 
 export interface IDataSourceTableInfo {
     id: number;
@@ -6,13 +6,14 @@ export interface IDataSourceTableInfo {
     createdAt: string;
     lastPolled: string | null;
     users: string[];
-    parsingTasks: IDataSourceTableParsinTask[];
+    parsingTasks: IDataSourceTableParsingTask[];
 }
 
-export interface IDataSourceTableParsinTask {
+export interface IDataSourceTableParsingTask {
     startTime: string;
     addedSites: string[];
     id: number;
     state: WorkingState;
+    updateTrigger: UpdateTrigger;
     error: string | null;
 }

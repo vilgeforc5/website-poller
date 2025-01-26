@@ -1,29 +1,18 @@
-"use client";
-import { NavLink, NavLinkProps } from "@mantine/core";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { routes } from "@/utils/route";
+import { NavBarLink } from "@/components/NavBar/NavBarLink";
+import { isUserAdmin } from "@/lib/serverJwtValues";
 
-const linkStyles: NavLinkProps = { style: { cursor: "pointer" } };
-
-export const NavBar = () => (
-    <>
-        {routes.map(({ label, href }) => (
-            <Link_ key={href} label={label} href={href} />
-        ))}
-    </>
-);
-
-const Link_ = ({ href, label }: { href: string; label: string }) => {
-    const pathname = usePathname();
+export const NavBar = async () => {
+    const isAdmin = await isUserAdmin();
+    const routeList = isAdmin
+        ? routes
+        : routes.filter((route) => !route.isAdminOnly);
 
     return (
-        <NavLink
-            label={label}
-            active={pathname === href}
-            component={Link}
-            href={href}
-            {...linkStyles}
-        />
+        <>
+            {routeList.map(({ label, href }) => (
+                <NavBarLink key={href} label={label} href={href} />
+            ))}
+        </>
     );
 };

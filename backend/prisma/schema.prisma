@@ -44,8 +44,8 @@ model Poll {
   retryCount    Int               @default(0)
   requestMethod EnumRequestMethod
   pollingTaskId Int
-  site          Site              @relation(fields: [siteId], references: [id])
-  pollingTask   PollingTask       @relation(fields: [pollingTaskId], references: [id])
+  site          Site              @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  pollingTask   PollingTask       @relation(fields: [pollingTaskId], references: [id], onDelete: Cascade)
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
 }

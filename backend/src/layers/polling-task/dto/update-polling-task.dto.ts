@@ -27,5 +27,5 @@ export class UpdatePollingTaskDto {
     @IsString()
     error?: string;
 
-    polls?: CreatePollDto[];
+    polls?: Omit<CreatePollDto, "pollingTaskId">[];
 }

@@ -16,8 +16,16 @@ export class DataSourceTableRepository {
         userId: number,
         data: CreateDataSourceTableDto & { googleSpreadSheetId: string },
     ) {
-        return this.dataSourceTable.create({
-            data: { ...data, users: { connect: { id: userId } } },
+        return this.dataSourceTable.upsert({
+            where: {
+                url: data.url,
+            },
+            create: { ...data, users: { connect: { id: userId } } },
+            update: {
+                users: {
+                    connect: { id: userId },
+                },
+            },
         });
     }
 
@@ -47,6 +55,7 @@ export class DataSourceTableRepository {
                             },
                         },
                         id: true,
+                        updateTrigger: true,
                     },
                     take: 10,
                 },

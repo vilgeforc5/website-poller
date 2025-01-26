@@ -30,6 +30,7 @@ export class PollerService {
 
         const task = await this.pollingTaskService.create({
             updateTrigger: "MANUAL",
+            requestMethod: dto?.method,
         });
 
         this.startTask(userId, task.id, dto?.method, dto?.parallelProcessCount);
@@ -51,11 +52,6 @@ export class PollerService {
                 parallelProcessCount,
             });
 
-            await this.pollingTaskService.update(pollingTaskId, {
-                pollingState: "IDLE",
-                endTime: new Date().toISOString(),
-            });
-
             if (!result.ok) {
                 await this.pollingTaskService.update(pollingTaskId, {
                     error: result.message || "Ошибка при парсинге",
@@ -65,6 +61,11 @@ export class PollerService {
             this.logger.info("startPoll: ended");
         } catch (error) {
             this.logger.error(error);
+        } finally {
+            await this.pollingTaskService.update(pollingTaskId, {
+                pollingState: "IDLE",
+                endTime: new Date().toISOString(),
+            });
         }
     }
 }

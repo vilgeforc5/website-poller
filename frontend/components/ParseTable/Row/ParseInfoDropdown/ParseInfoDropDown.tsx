@@ -31,7 +31,18 @@ export const ParseInfoDropdown = ({ row }: { row: IDataSourceTableInfo }) => {
                             >
                                 {new Date(task.startTime).toLocaleString()}
                             </GridCol>
-                            <GridCol span={10}>
+                            <GridCol
+                                span={2}
+                                style={{
+                                    borderRight:
+                                        "1px solid var(--mantine-color-gray-4)",
+                                }}
+                            >
+                                {task.updateTrigger === "MANUAL"
+                                    ? "Запуск вручную"
+                                    : "Запуск по-расписанию"}
+                            </GridCol>
+                            <GridCol span={8}>
                                 <Group gap="sm">
                                     {task.state === "RUNNING" && (
                                         <Badge

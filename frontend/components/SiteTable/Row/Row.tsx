@@ -1,11 +1,13 @@
-import { IDataSourceTableInfo } from "backend/dist/layers/data-source-table/data-source-table.types";
+import { ISiteInfo } from "backend/dist/layers/site/site.types";
 import { Anchor, Grid, GridCol, List, ListItem, Text } from "@mantine/core";
-import { RowControls } from "@/components/ParseTable/Row/RowControls";
-import { ParseInfoDropdown } from "@/components/ParseTable/Row/ParseInfoDropdown/ParseInfoDropDown";
+import { RowControls } from "@/components/SiteTable/Row/RowControls";
 import { isUserAdmin } from "@/lib/serverJwtValues";
 
-export const Row = async ({ row }: { row: IDataSourceTableInfo }) => {
-    const lastPolled = row.lastPolled;
+interface ISiteTableRowProps {
+    row: ISiteInfo;
+}
+
+export const SiteTableRow = async ({ row }: ISiteTableRowProps) => {
     const isAdmin = await isUserAdmin();
 
     return (
@@ -14,7 +16,7 @@ export const Row = async ({ row }: { row: IDataSourceTableInfo }) => {
                 borderBottom: "1px solid var(--mantine-color-gray-4)",
             }}
             component={GridCol}
-            key={row.url}
+            key={row.address}
             // @ts-expect-error
             span={12}
         >
@@ -22,7 +24,7 @@ export const Row = async ({ row }: { row: IDataSourceTableInfo }) => {
             <Grid component={GridCol} align="center" span={12}>
                 <GridCol span={1}>
                     <RowControls
-                        disableDropDown={row.parsingTasks.length === 0}
+                        disableDropDown={row.polls.length === 0}
                         id={row.id}
                     />
                 </GridCol>
@@ -34,8 +36,8 @@ export const Row = async ({ row }: { row: IDataSourceTableInfo }) => {
                             textOverflow: "ellipsis",
                         }}
                     >
-                        <Anchor href={row.url} target="_blank">
-                            {row.url}
+                        <Anchor href={row.address} target="_blank">
+                            {row.address}
                         </Anchor>
                     </Text>
                 </GridCol>
@@ -43,19 +45,18 @@ export const Row = async ({ row }: { row: IDataSourceTableInfo }) => {
                     <Text>{new Date(row.createdAt).toLocaleString()}</Text>
                 </GridCol>
                 <GridCol span={2}>
-                    {lastPolled ? new Date(lastPolled).toLocaleString() : "-"}
+                    {/*{lastPolled ? new Date(lastPolled).toLocaleString() : "-"}*/}
                 </GridCol>
                 {isAdmin && (
                     <GridCol span={2}>
                         <List type="unordered" icon={""}>
-                            {row.users.map((user) => (
-                                <ListItem key={user}>{user}</ListItem>
+                            {row.users.map(({ email }) => (
+                                <ListItem key={email}>{email}</ListItem>
                             ))}
                         </List>
                     </GridCol>
                 )}
             </Grid>
-            <ParseInfoDropdown row={row} />
         </Grid>
     );
 };

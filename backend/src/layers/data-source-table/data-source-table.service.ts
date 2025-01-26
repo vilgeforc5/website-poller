@@ -86,6 +86,7 @@ export class DataSourceTableService {
                         id: task.id,
                         state: task.workingState,
                         error: task.error,
+                        updateTrigger: task.updateTrigger,
                     };
                 }),
             };

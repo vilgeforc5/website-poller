@@ -5,6 +5,7 @@ import { TablePagination } from "@/components/SiteTable/Pagination/TablePaginati
 import { SitesPerPageInput } from "@/components/SiteTable/SitesPerPageInput";
 import { SiteTableHeader } from "@/components/SiteTable/SiteTableHeader";
 import { ISiteInfo } from "backend/dist/layers/site/site.types";
+import { SiteTableRow } from "@/components/SiteTable/Row/Row";
 
 const sitesPerPageDefault = 50;
 
@@ -32,12 +33,15 @@ export const SiteTable = async ({ sitesPerPage, page }: ISiteTableProps) => {
         },
     );
 
-    console.log(sites);
+    // console.log(sites);
 
     return (
         <Grid>
             <SitesPerPageInput siteCountPerPage={siteCountPerPage} />
             <SiteTableHeader />
+            {sites.map((site) => (
+                <SiteTableRow key={site.address} row={site} />
+            ))}
             <TablePagination
                 defaultValue={siteCountPerPage > totalSiteCount ? 1 : pageNum}
                 total={Math.ceil(totalSiteCount / siteCountPerPage)}

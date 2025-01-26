@@ -1,6 +1,8 @@
 import { ReactNode } from "react";
-import { SimpleGrid, Stack, Title } from "@mantine/core";
+import { SimpleGrid, Stack } from "@mantine/core";
 import "@mantine/charts/styles.css";
+import { PageTitle } from "@/components/PageTitle/PageTitle";
+import { revalidatePath } from "next/cache";
 
 export default function DashboardLayout({
     children,
@@ -13,7 +15,14 @@ export default function DashboardLayout({
 }) {
     return (
         <Stack>
-            <Title order={2}>Главная</Title>
+            <PageTitle
+                refresh={async () => {
+                    "use server";
+
+                    revalidatePath("/dashboard");
+                }}
+                title="Главная"
+            />
             <SimpleGrid cols={{ base: 1, lg: 2 }}>
                 {cards}
                 {codeChart}

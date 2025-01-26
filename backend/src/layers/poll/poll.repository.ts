@@ -34,6 +34,31 @@ export class PollRepository {
         });
     }
 
+    getTodayInfo(userId: number) {
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
+
+        return this.poll.findMany({
+            where: {
+                ...this.siteForUserFilter(userId),
+                createdAt: {
+                    gte: todayStart,
+                },
+                pollingTask: {
+                    pollingState: "IDLE",
+                },
+            },
+            select: {
+                statusCode: true,
+                pollingTask: {
+                    select: {
+                        startTime: true,
+                    },
+                },
+            },
+        });
+    }
+
     getTotalPollCount(userId: number, from?: Date, to?: Date) {
         return this.poll.count({
             where: {

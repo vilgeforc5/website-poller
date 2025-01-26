@@ -23,6 +23,7 @@ export const TablePagination = ({
 
     return (
         <Pagination
+            mt="sm"
             value={defaultValue}
             onChange={(value) => {
                 router.push(createPageURL(value));

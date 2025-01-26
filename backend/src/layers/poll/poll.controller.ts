@@ -10,4 +10,9 @@ export class PollController {
     getLatestInfo(@GetCurrentUserId() userId: number) {
         return this.pollService.getLatestInfo(userId);
     }
+
+    @Get("code-info")
+    getCodeInfo(@GetCurrentUserId() userId: number) {
+        return this.pollService.getTodayInfoCodes(userId);
+    }
 }

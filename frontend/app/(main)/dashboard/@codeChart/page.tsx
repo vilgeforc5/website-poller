@@ -1,5 +1,9 @@
-import CodeChartComponent from "@/app/(main)/dashboard/@codeChart/component";
+import { CodesChart } from "@/components/CodesChart/CodesChart";
+import { serverFetch } from "@/lib/serverFetch";
+import { TPollCodeInfo } from "backend/dist/layers/poll/poll.types";
 
-export default function CodeChartPage() {
-    return <CodeChartComponent />;
+export default async function CodeChartPage() {
+    const data = await serverFetch<TPollCodeInfo>("/poll/code-info/");
+
+    return <CodesChart data={data.data} />;
 }

@@ -4,12 +4,16 @@ import { EnumRequestMethod } from "@prisma/client";
 import {
     catchError,
     concatMap,
-    forkJoin,
+    from,
     map,
+    mergeMap,
+    Observable,
     of,
     retryWhen,
+    tap,
     throwError,
     timer,
+    toArray,
 } from "rxjs";
 import { AxiosResponse } from "axios";
 import { HttpService } from "@nestjs/axios";
@@ -53,7 +57,7 @@ export class PollerWorker extends ChunkWorker<
         addressList: string[],
         method: EnumRequestMethod = "HEAD",
         retryCountConfig: number = 5,
-    ): Promise<Array<PollerWorkerProcessedData>> {
+    ): Observable<Array<PollerWorkerProcessedData>> {
         const axiosMethodMap: Record<EnumRequestMethod, string> = {
             GET: "get",
             HEAD: "head",
@@ -64,47 +68,46 @@ export class PollerWorker extends ChunkWorker<
         const handleRequest = (url: string) => {
             let retryCount = 0;
 
-            return new Promise(async (resolve) => {
-                this.httpService[axiosMethodMap[method]](url)
-                    .pipe(
-                        map((response: AxiosResponse) => ({
-                            url,
-                            status: response.status,
-                        })),
-                        retryWhen((errors) =>
-                            errors.pipe(
-                                concatMap((error, i) => {
-                                    if (i < retryCountConfig) {
-                                        retryCount++;
-
-                                        return timer(500);
-                                    } else {
-                                        return throwError(() => error);
-                                    }
-                                }),
-                            ),
+            return from(
+                this.httpService[axiosMethodMap[method]](url, {
+                    timeout: 2000,
+                }).pipe(
+                    map((response: AxiosResponse) => ({
+                        url,
+                        status: response.status,
+                        retryCount,
+                    })),
+                    tap((data) => {
+                        console.log("after map");
+                        console.log(data);
+                        return data;
+                    }),
+                    retryWhen((errors) =>
+                        errors.pipe(
+                            concatMap((error, i) => {
+                                if (i < retryCountConfig) {
+                                    retryCount++;
+                                    return timer(250);
+                                } else {
+                                    return throwError(() => error);
+                                }
+                            }),
                         ),
-                        catchError((error) => {
-                            const status = error.response
-                                ? error.response?.status
-                                : 500;
-
-                            return of({ url, status });
-                        }),
-                    )
-                    .subscribe({
-                        next: (value) => resolve({ ...value, retryCount }),
-                    });
-            });
+                    ),
+                    catchError((error) => {
+                        const status = error.response
+                            ? error.response?.status
+                            : 500;
+                        return of({ url, status, retryCount });
+                    }),
+                ),
+            );
         };
 
-        return new Promise((resolve) => {
-            forkJoin(addressList.map((url) => handleRequest(url))).subscribe(
-                (result: any) => {
-                    resolve(result);
-                },
-            );
-        });
+        return from(addressList).pipe(
+            mergeMap((url) => handleRequest(url)),
+            toArray(),
+        );
     }
 
     getChunk(
@@ -122,31 +125,34 @@ export class PollerWorker extends ChunkWorker<
         sites: PollerWorkerSourceData[],
         { requestMethod, pollingTaskId }: PollerWorkerScope,
     ) {
-        const poll = await this.pollWebsites(
-            sites.map((site) => site.address),
-            requestMethod,
-        );
+        return new Promise((res) => {
+            this.pollWebsites(
+                sites.map((site) => site.address),
+                requestMethod,
+            ).subscribe(async (poll) => {
+                const polls = poll
+                    .map((data) => {
+                        const targetSite = sites.find(
+                            (site) => site.address === data.url,
+                        );
 
-        const polls = poll
-            .map((data) => {
-                const targetSite = sites.find(
-                    (site) => site.address === data.url,
-                );
+                        if (!targetSite) {
+                            return undefined;
+                        }
 
-                if (!targetSite) {
-                    return undefined;
-                }
+                        return {
+                            siteId: targetSite.id,
+                            statusCode: data.status,
+                            retryCount: data.retryCount,
+                            requestMethod,
+                        };
+                    })
+                    .filter((poll) => !!poll);
 
-                return {
-                    siteId: targetSite.id,
-                    statusCode: data.status,
-                    retryCount: data.retryCount,
-                    requestMethod,
-                    pollingTaskId,
-                };
-            })
-            .filter((poll) => !!poll);
+                await this.pollingTaskService.update(pollingTaskId, { polls });
 
-        await this.pollingTaskService.update(pollingTaskId, { polls });
+                res(undefined);
+            });
+        });
     }
 }

@@ -1,6 +1,9 @@
 import { Box, Grid, GridCol, Text } from "@mantine/core";
+import { isUserAdmin } from "@/lib/serverJwtValues";
 
-export const SiteTableHeader = () => {
+export const SiteTableHeader = async () => {
+    const isAdmin = await isUserAdmin();
+
     return (
         <GridCol
             style={{ borderBottom: "1px solid var(--mantine-color-gray-4)" }}
@@ -10,7 +13,7 @@ export const SiteTableHeader = () => {
             <GridCol span={1}>
                 <Box w="xl" />
             </GridCol>
-            <GridCol span={7}>
+            <GridCol span={5}>
                 <ParseTableHeaderText>Адрес</ParseTableHeaderText>
             </GridCol>
             <GridCol span={2}>
@@ -19,6 +22,11 @@ export const SiteTableHeader = () => {
             <GridCol span={2}>
                 <ParseTableHeaderText>Последний код</ParseTableHeaderText>
             </GridCol>
+            {isAdmin && (
+                <GridCol span={2}>
+                    <ParseTableHeaderText>Пользователи</ParseTableHeaderText>
+                </GridCol>
+            )}
         </GridCol>
     );
 };
