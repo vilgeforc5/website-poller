@@ -1,12 +1,13 @@
 import StatsCard from "@/components/StatsCard/StatsCard";
 import { serverFetch } from "@/lib/serverFetch";
 import { IPollingTaskLatestInfo } from "backend/src/layers/polling-task/polling-task.types";
+import { getLocaleData } from "@/lib/getLocaleData";
 
 export const PollingCard = async () => {
     const { data } = await serverFetch<IPollingTaskLatestInfo>(
         "/polling-task/latest-info",
     );
-    const lastTime = data.lastTaskTime;
+    const lastTime = getLocaleData(data.lastTaskTime);
 
     return (
         <StatsCard
