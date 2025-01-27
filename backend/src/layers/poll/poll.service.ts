@@ -35,7 +35,7 @@ export class PollService {
         const groupedData: { [date: string]: number[] } = {};
 
         data.forEach((item) => {
-            const dateKey = item.pollingTask.startTime.toLocaleTimeString();
+            const dateKey = item.pollingTask.startTime.toISOString();
 
             if (!groupedData[dateKey]) {
                 groupedData[dateKey] = [];
