@@ -1,9 +1,8 @@
-import { NextApiRequest, NextApiResponse } from "next";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { refresh } from "@/lib/refresh";
 
-export async function POST(req: NextApiRequest, res: NextApiResponse) {
+export async function POST() {
     const nowUnix = (+new Date() / 1e3) | 0;
     try {
         const cookieStore = await cookies();
@@ -38,7 +37,7 @@ export async function POST(req: NextApiRequest, res: NextApiResponse) {
                 headers,
             },
         );
-    } catch (error) {
+    } catch {
         return new Response("Error", { status: 500 });
     }
 }
