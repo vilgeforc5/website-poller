@@ -43,7 +43,7 @@ export class PollService {
             groupedData[dateKey].push(item.statusCode);
         });
 
-        return Object.entries(groupedData).reduce<TPollCodeInfo>(
+        const result = Object.entries(groupedData).reduce<TPollCodeInfo>(
             (acc, [date, codes]) => {
                 return [
                     ...acc,
@@ -58,5 +58,9 @@ export class PollService {
             },
             [],
         );
+
+        result.sort((a, b) => a.date.localeCompare(b.date));
+
+        return result;
     }
 }

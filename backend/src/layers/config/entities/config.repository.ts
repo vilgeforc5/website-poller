@@ -12,7 +12,7 @@ export class ConfigRepository {
     }
 
     get() {
-        return this.config.findUnique({
+        return this.config.findFirstOrThrow({
             where: { id: ConfigRepository.singletonKey },
         });
     }

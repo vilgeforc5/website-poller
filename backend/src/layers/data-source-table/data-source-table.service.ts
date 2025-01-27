@@ -97,6 +97,10 @@ export class DataSourceTableService {
         return this.dataSourceTableRepository.getById(userId, tableId);
     }
 
+    getAll(userId: number) {
+        return this.dataSourceTableRepository.getAll(userId);
+    }
+
     delete(userId: number, deleteDto: DeleteDataSourceTableDto) {
         return this.dataSourceTableRepository.delete(userId, deleteDto);
     }

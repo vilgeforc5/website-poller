@@ -11,7 +11,7 @@ export class ConfigController {
         return this.configService.get();
     }
 
-    @Post()
+    @Post("update")
     update(@Body() updateConfigDto: UpdateConfigDto) {
         return this.configService.update(updateConfigDto);
     }

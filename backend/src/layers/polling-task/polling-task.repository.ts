@@ -30,10 +30,6 @@ export class PollingTaskRepository {
         });
     }
 
-    get(id: number) {
-        return this.pollingTask.findUnique({ where: { id } });
-    }
-
     getAllRunningTasks() {
         return this.pollingTask.findMany({
             where: {

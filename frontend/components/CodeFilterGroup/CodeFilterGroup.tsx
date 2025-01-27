@@ -11,7 +11,6 @@ export const CodeFilterGroup = () => {
     const isChecked = (value: number) =>
         codes.includes(value) || codes.length === 0;
 
-    console.log(codes);
     return (
         <Group justify="center" mt="md">
             <Chip

@@ -93,6 +93,14 @@ export class DataSourceTableRepository {
         });
     }
 
+    async getAll(userId: number) {
+        const filters = await this.getCommonUserIdFilter(userId);
+
+        return this.dataSourceTable.findMany({
+            where: { users: filters },
+        });
+    }
+
     private async getCommonUserIdFilter(id: number) {
         const isAdmin = await this.usersService.isAdmin(id);
 

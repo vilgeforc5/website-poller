@@ -61,6 +61,7 @@ export class SiteController {
             userId,
             skip,
             limit,
+            true,
             {
                 polls: {
                     select: {

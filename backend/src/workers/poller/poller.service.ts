@@ -1,10 +1,11 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { PinoLogger } from "nestjs-pino";
 import { PollerWorker } from "src/workers/poller/poller-worker/poller.worker";
 import { PollingTaskService } from "src/layers/polling-task/polling-task.service";
-import { TriggerManualPollDto } from "src/workers/poller/dto/trigger-manual.dto";
-import { EnumRequestMethod } from "@prisma/client";
+import { EnumRequestMethod, UpdateTrigger } from "@prisma/client";
 import { ConfigService } from "src/layers/config/config.service";
+import { TelegramService } from "src/layers/telegram/telegram.service";
+import { SiteService } from "src/layers/site/site.service";
 
 @Injectable()
 export class PollerService {
@@ -13,11 +14,13 @@ export class PollerService {
         private readonly pollingTaskService: PollingTaskService,
         private readonly worker: PollerWorker,
         private readonly config: ConfigService,
+        private readonly telegramService: TelegramService,
+        private readonly siteService: SiteService,
     ) {
         logger.setContext(PollerService.name);
     }
 
-    async triggerManual(userId: number, dto?: TriggerManualPollDto) {
+    async trigger(userId: number, updateTrigger: UpdateTrigger = "MANUAL") {
         this.logger.info("triggerPoll");
 
         const hasRunningTasks = await this.pollingTaskService.hasRunningTask();
@@ -27,15 +30,15 @@ export class PollerService {
                 "startPoll: Attempt to poll when already started",
             );
 
-            throw new BadRequestException();
+            return;
         }
 
-        const task = await this.pollingTaskService.create({
-            updateTrigger: "MANUAL",
-            requestMethod: dto?.method,
-        });
-
         const config = await this.config.get();
+
+        const task = await this.pollingTaskService.create({
+            updateTrigger,
+            requestMethod: config?.requestMethod,
+        });
 
         this.startTask(
             userId,
@@ -43,6 +46,7 @@ export class PollerService {
             config?.requestMethod,
             config?.parallelSitesCount,
             config?.retryCount,
+            config?.headers || {},
         );
 
         return { id: task.id };
@@ -54,6 +58,7 @@ export class PollerService {
         requestMethod: EnumRequestMethod = "HEAD",
         parallelProcessCount = 10,
         retryCount = 5,
+        headers = {},
     ) {
         try {
             const result = await this.worker.work({
@@ -62,6 +67,7 @@ export class PollerService {
                 requestMethod,
                 parallelProcessCount,
                 retryCount,
+                headers,
             });
 
             if (!result.ok) {
@@ -73,11 +79,39 @@ export class PollerService {
             this.logger.info("startPoll: ended");
         } catch (error) {
             this.logger.error(error);
+            await this.telegramService.broadcast(
+                `Случилась ошибка при polling'е сайтов:\n${error}`,
+            );
         } finally {
+            const endTime = new Date().toISOString();
+
             await this.pollingTaskService.update(pollingTaskId, {
                 pollingState: "IDLE",
-                endTime: new Date().toISOString(),
+                endTime,
             });
+
+            const sites =
+                await this.siteService.getAllForPollingTask(pollingTaskId);
+
+            const resultInfoMessage = sites.reduce<string>((acc, site) => {
+                const latestPoll = site.polls.at(0);
+
+                if (
+                    !latestPoll ||
+                    (latestPoll.statusCode >= 200 &&
+                        latestPoll.statusCode < 300)
+                ) {
+                    return acc;
+                }
+
+                const message = `${site.address}: \nКод ${latestPoll.statusCode} | Попыток ${latestPoll.retryCount}`;
+
+                return acc + "\n" + message;
+            }, "");
+
+            await this.telegramService.broadcast(
+                `Опрос в ${new Date().toISOString()}\nВсего: ${sites.length} cайтов\nОшибки:\n${resultInfoMessage || "Нет ошибок."}`,
+            );
         }
     }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { UserRepository } from "src/layers/users/user.repository";
@@ -44,5 +44,15 @@ export class UsersService {
         const user = await this.userRepository.getUserRole(id);
 
         return user?.role === "ADMIN" || user?.role === "OWNER";
+    }
+
+    async getPrivilegedUserId() {
+        try {
+            return (await this.userRepository.getAdminOrOwnerId()).id;
+        } catch (error) {
+            this.logger.error(error);
+
+            throw new InternalServerErrorException("no admin found");
+        }
     }
 }

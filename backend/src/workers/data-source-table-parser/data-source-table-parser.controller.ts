@@ -14,9 +14,6 @@ export class DataSourceTableParserController {
         @GetCurrentUserId() userId: number,
         @Param("dataTableId") tableId: string,
     ) {
-        return this.dataSourceTableParserService.triggerManualParse(
-            +userId,
-            +tableId,
-        );
+        return this.dataSourceTableParserService.trigger(+userId, +tableId);
     }
 }

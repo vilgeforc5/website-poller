@@ -19,6 +19,7 @@ export class SiteRepository {
         userId: number,
         skip = 0,
         take = 10,
+        orderByDesc = false,
         include: Prisma.SiteInclude = {},
         where: Prisma.SiteWhereInput = {},
     ) {
@@ -29,7 +30,7 @@ export class SiteRepository {
             take,
             where: { ...where, ...filter },
             include,
-            orderBy: { createdAt: "desc" },
+            orderBy: orderByDesc ? { createdAt: "desc" } : {},
         });
     }
 
@@ -89,6 +90,31 @@ export class SiteRepository {
                 createdAt: {
                     gte: pastDate,
                     lte: currentDate,
+                },
+            },
+        });
+    }
+
+    getAllForPollingTask(pollingTaskId: number) {
+        return this.site.findMany({
+            where: {
+                polls: {
+                    some: {
+                        pollingTaskId,
+                    },
+                },
+            },
+            select: {
+                address: true,
+                polls: {
+                    where: {
+                        pollingTaskId,
+                    },
+                    select: {
+                        statusCode: true,
+                        requestMethod: true,
+                        retryCount: true,
+                    },
                 },
             },
         });

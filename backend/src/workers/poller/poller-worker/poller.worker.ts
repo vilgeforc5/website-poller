@@ -10,7 +10,6 @@ import {
     Observable,
     of,
     retryWhen,
-    tap,
     throwError,
     timer,
     toArray,
@@ -38,6 +37,7 @@ interface PollerWorkerScope {
     requestMethod: EnumRequestMethod;
     parallelProcessCount: number;
     retryCount: number;
+    headers: Record<string, string>;
 }
 
 @Injectable()
@@ -58,7 +58,9 @@ export class PollerWorker extends ChunkWorker<
         addressList: string[],
         method: EnumRequestMethod = "HEAD",
         retryCountConfig: number = 5,
+        headers: Record<string, string>,
     ): Observable<Array<PollerWorkerProcessedData>> {
+        console.log({ headers, retryCountConfig, method });
         const axiosMethodMap: Record<EnumRequestMethod, string> = {
             GET: "get",
             HEAD: "head",
@@ -72,15 +74,13 @@ export class PollerWorker extends ChunkWorker<
             return from(
                 this.httpService[axiosMethodMap[method]](url, {
                     timeout: 2000,
+                    headers,
                 }).pipe(
                     map((response: AxiosResponse) => ({
                         url,
                         status: response.status,
                         retryCount,
                     })),
-                    tap((data) => {
-                        console.log(data);
-                    }),
                     retryWhen((errors) =>
                         errors.pipe(
                             concatMap((error, i) => {
@@ -122,13 +122,24 @@ export class PollerWorker extends ChunkWorker<
 
     async processChunk(
         sites: PollerWorkerSourceData[],
-        { requestMethod, pollingTaskId, retryCount }: PollerWorkerScope,
+        {
+            requestMethod,
+            pollingTaskId,
+            retryCount,
+            headers,
+        }: PollerWorkerScope,
     ) {
         return new Promise((res) => {
+            console.log(
+                sites.length,
+                sites.map((site) => site.address),
+            );
+
             this.pollWebsites(
                 sites.map((site) => site.address),
                 requestMethod,
                 retryCount,
+                headers,
             ).subscribe(async (poll) => {
                 const polls = poll
                     .map((data) => {
@@ -151,7 +162,7 @@ export class PollerWorker extends ChunkWorker<
 
                 await this.pollingTaskService.update(pollingTaskId, { polls });
 
-                res(undefined);
+                res(polls);
             });
         });
     }

@@ -37,7 +37,7 @@ export const SiteTable = async ({ sitesPerPage, page }: ISiteTableProps) => {
 
     return (
         <Grid>
-            <Group mb="md">
+            <Group pl="sm" mb="md">
                 <SitesPerPageInput
                     max={totalSiteCount}
                     siteCountPerPage={siteCountPerPage}

@@ -18,8 +18,14 @@ export class SiteService {
         this.logger.info("upsert: ", createSiteDto);
 
         return Promise.all(
-            createSiteDto.map((site) =>
-                this.siteRepository.upsert(userId, site),
+            createSiteDto.map(
+                (site) =>
+                    new Promise(async (res) => {
+                        await this.siteRepository.upsert(userId, site);
+                        await new Promise(async (res) => setTimeout(res, 50));
+
+                        res(undefined);
+                    }),
             ),
         );
     }
@@ -28,6 +34,7 @@ export class SiteService {
         userId: number,
         skip = 0,
         take = 5,
+        orderByDesc = false,
         include: Prisma.SiteInclude = {},
         where: Prisma.SiteWhereInput = {},
     ) {
@@ -35,6 +42,7 @@ export class SiteService {
             userId,
             skip,
             take,
+            orderByDesc,
             include,
             where,
         );
@@ -58,5 +66,9 @@ export class SiteService {
 
     getTotalCount(userId: number) {
         return this.siteRepository.count(userId);
+    }
+
+    getAllForPollingTask(pollingTaskId: number) {
+        return this.siteRepository.getAllForPollingTask(pollingTaskId);
     }
 }

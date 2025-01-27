@@ -53,4 +53,12 @@ export class UserRepository {
             select: { role: true },
         });
     }
+
+    async getAdminOrOwnerId() {
+        return this.user.findFirstOrThrow({
+            where: {
+                OR: [{ role: "OWNER" }, { role: "ADMIN" }],
+            },
+        });
+    }
 }

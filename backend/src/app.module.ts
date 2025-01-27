@@ -13,11 +13,12 @@ import { DataSourceTableParserModule } from "./workers/data-source-table-parser/
 import { DataSourceTableTaskModule } from "./layers/data-source-table-task/data-source-table-task.module";
 import { ConfigModule as AppConfigModule } from "./layers/config/config.module";
 import { SchedulerModule } from "src/workers/cron/scheduler.module";
+import { TelegramModule } from "src/layers/telegram/telegram.module";
 
 @Module({
     imports: [
         ConfigModule.forRoot({ isGlobal: true }),
-        LoggerModule.forRoot(),
+        LoggerModule.forRoot({}),
         SiteModule,
         PollModule,
         AuthModule,
@@ -28,6 +29,7 @@ import { SchedulerModule } from "src/workers/cron/scheduler.module";
         DataSourceTableTaskModule,
         AppConfigModule,
         SchedulerModule,
+        TelegramModule,
     ],
     providers: [
         {

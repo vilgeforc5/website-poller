@@ -37,7 +37,6 @@ export abstract class ChunkWorker<
 
         while (true) {
             const chunk = await this.getChunk(this.processedCount, scopeInfo);
-            console.log(chunk);
             if (chunk.length === 0) {
                 break;
             }

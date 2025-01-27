@@ -1,8 +1,9 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { DataSourceTableService } from "src/layers/data-source-table/data-source-table.service";
 import { PinoLogger } from "nestjs-pino";
 import { ParserWorkerService } from "src/workers/data-source-table-parser/parser-worker/parser-worker.service";
 import { DataSourceTableTaskService } from "src/layers/data-source-table-task/data-source-table-task.service";
+import { UpdateTrigger } from "@prisma/client";
 
 @Injectable()
 export class DataSourceTableParserService {
@@ -15,16 +16,43 @@ export class DataSourceTableParserService {
         this.logger.setContext(DataSourceTableParserService.name);
     }
 
-    async triggerManualParse(userId: number, tableId: number) {
+    async parseAll(userId: number) {
+        const tables = await this.dataSourceTableService.getAll(userId);
+
+        if (!tables) {
+            return;
+        }
+
+        for (const table of tables) {
+            const task = await this.dataSourceTableTaskService.create({
+                dataSourceTableId: table.id,
+                updateTrigger: "SCHEDULE",
+            });
+
+            await this.startTask({
+                taskId: task.id,
+                userId,
+                spreadsheetId: table.googleSpreadSheetId,
+            });
+        }
+    }
+
+    async trigger(
+        userId: number,
+        tableId: number,
+        updateTrigger: UpdateTrigger = "MANUAL",
+    ) {
         const table = await this.dataSourceTableService.get(userId, tableId);
 
         if (!table || !table.id) {
-            throw new BadRequestException();
+            this.logger.error("trigger userId not found");
+
+            return;
         }
 
         const task = await this.dataSourceTableTaskService.create({
             dataSourceTableId: table.id,
-            updateTrigger: "MANUAL",
+            updateTrigger,
         });
 
         this.startTask({

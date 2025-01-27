@@ -1,4 +1,4 @@
-import { IsEnum, IsInt, IsJSON, IsOptional } from "class-validator";
+import { IsEnum, IsInt, IsOptional } from "class-validator";
 import { EnumRequestMethod } from "@prisma/client";
 
 export class UpdateConfigDto {
@@ -22,7 +22,6 @@ export class UpdateConfigDto {
     @IsOptional()
     requestMethod?: EnumRequestMethod;
 
-    @IsJSON()
     @IsOptional()
     headers?: string;
 }

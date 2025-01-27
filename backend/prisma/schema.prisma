@@ -93,6 +93,11 @@ model Config {
   requestMethod      EnumRequestMethod @default(GET)
 }
 
+model TelegramUser {
+  id     Int @id @default(autoincrement())
+  chatId Int @unique
+}
+
 enum DataSourceTableProvider {
   GOOGLE
 }

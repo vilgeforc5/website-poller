@@ -13,5 +13,6 @@ import { DataSourceTableTaskModule } from "src/layers/data-source-table-task/dat
     ],
     controllers: [DataSourceTableParserController],
     providers: [DataSourceTableParserService],
+    exports: [DataSourceTableParserService],
 })
 export class DataSourceTableParserModule {}
