@@ -2,6 +2,7 @@ import StatsCard from "../StatsCard";
 import { serverFetch } from "@/lib/serverFetch";
 import { routeLinks } from "@/utils/route";
 import { IDataSourceTableTaskLatestInfo } from "backend/src/layers/data-source-table-task/data-source-table-task.types";
+import { LocalTime } from "@/components/LocalTime/LocalTime";
 
 export const ParsingCard = async () => {
     const {
@@ -16,9 +17,7 @@ export const ParsingCard = async () => {
             period="За сегодня"
             value={count}
             description={
-                lastTaskTime
-                    ? `Последний парсинг: ${new Date(lastTaskTime).toLocaleString()}`
-                    : undefined
+                lastTaskTime ? <LocalTime date={lastTaskTime} /> : undefined
             }
             link={routeLinks.tables}
         />

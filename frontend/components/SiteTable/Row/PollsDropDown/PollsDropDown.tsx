@@ -2,6 +2,7 @@ import { ISiteInfo } from "backend/dist/layers/site/site.types";
 import { ParseInfoDropdownWrapper } from "@/components/SiteTable/Row/PollsDropDown/PollsDropDownWrapper";
 import { Grid, GridCol, ScrollAreaAutosize, Text } from "@mantine/core";
 import { CodeStatusBadge } from "@/components/SiteTable/Row/CodeStatusBadge";
+import { LocalTime } from "@/components/LocalTime/LocalTime";
 
 interface IPollsDropDownProps {
     polls: ISiteInfo["polls"];
@@ -42,9 +43,8 @@ export const PollsDropDown = ({ polls, id }: IPollsDropDownProps) => {
                             key={poll.id}
                         >
                             <GridCol span={3}>
-                                {new Date(poll.createdAt).toLocaleString()}
+                                <LocalTime date={poll.createdAt} />
                             </GridCol>
-
                             <GridCol span={3}>
                                 <CodeStatusBadge code={poll.statusCode} />
                             </GridCol>

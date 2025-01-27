@@ -1,5 +1,6 @@
 import {
     Badge,
+    Box,
     Flex,
     Group,
     NavLink,
@@ -16,13 +17,14 @@ import {
 
 import classes from "./StatsCard.module.scss";
 import Link from "next/link";
+import { ReactNode } from "react";
 
 type StatsCardProps = {
     title: string;
     value: string | number;
     diff?: number;
     period?: string;
-    description?: string;
+    description?: ReactNode;
     link?: string;
 };
 
@@ -56,7 +58,12 @@ const StatsCard = ({
                         </Badge>
                     )}
                 </Group>
-                <Stack m="auto 0" align="flex-start" gap="0">
+                <Stack
+                    m="auto 0"
+                    align="flex-start"
+                    gap="0"
+                    style={{ justifySelf: "center" }}
+                >
                     <Group gap="sm" justify="center">
                         <Text className={classes.value}>{value}</Text>
                         {diff && (
@@ -75,23 +82,25 @@ const StatsCard = ({
                         {description}
                     </Text>
                 </Stack>
-                {link && (
-                    <NavLink
-                        label="смотреть больше"
-                        href={link}
-                        p={0}
-                        component={Link}
-                        variant="subtle"
-                        active={true}
-                        rightSection={
-                            <IconChevronRight
-                                size={12}
-                                stroke={1.5}
-                                className="mantine-rotate-rtl"
-                            />
-                        }
-                    />
-                )}
+                <Box h="xl">
+                    {link && (
+                        <NavLink
+                            label="смотреть больше"
+                            href={link}
+                            p={0}
+                            component={Link}
+                            variant="subtle"
+                            active={true}
+                            rightSection={
+                                <IconChevronRight
+                                    size={12}
+                                    stroke={1.5}
+                                    className="mantine-rotate-rtl"
+                                />
+                            }
+                        />
+                    )}
+                </Box>
             </Flex>
         </Paper>
     );

@@ -1,6 +1,7 @@
 import { IDataSourceTableInfo } from "backend/dist/layers/data-source-table/data-source-table.types";
 import { ParseInfoDropdownWrapper } from "@/components/ParseTable/Row/ParseInfoDropdown/ParseInfoDropdownWrapper";
 import { Badge, Grid, GridCol, Group, ScrollAreaAutosize } from "@mantine/core";
+import { LocalTime } from "@/components/LocalTime/LocalTime";
 
 export const ParseInfoDropdown = ({ row }: { row: IDataSourceTableInfo }) => {
     return (
@@ -29,7 +30,7 @@ export const ParseInfoDropdown = ({ row }: { row: IDataSourceTableInfo }) => {
                                         "1px solid var(--mantine-color-gray-4)",
                                 }}
                             >
-                                {new Date(task.startTime).toLocaleString()}
+                                <LocalTime date={task.startTime} />
                             </GridCol>
                             <GridCol
                                 span={2}

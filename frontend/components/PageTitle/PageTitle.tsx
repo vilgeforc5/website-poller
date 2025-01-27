@@ -9,10 +9,11 @@ import {
     Title,
 } from "@mantine/core";
 import { IconRefresh } from "@tabler/icons-react";
+import { ReactNode } from "react";
 
 interface IPageTitleProps extends GroupProps {
     title: string;
-    description?: string | null;
+    description?: ReactNode | null;
     refresh?: () => void;
 }
 

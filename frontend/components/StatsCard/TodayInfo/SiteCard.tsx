@@ -2,6 +2,7 @@ import StatsCard from "@/components/StatsCard/StatsCard";
 import { serverFetch } from "@/lib/serverFetch";
 import { ISiteLatestInfo } from "backend/src/layers/site/site.types";
 import { routeLinks } from "@/utils/route";
+import { LocalTime } from "@/components/LocalTime/LocalTime";
 
 export const SiteCard = async () => {
     const { data } = await serverFetch<ISiteLatestInfo>("/site/latest-info");
@@ -12,9 +13,9 @@ export const SiteCard = async () => {
             title="Сайты"
             period="За все время"
             description={
-                lastCreatedTime
-                    ? `Последнее изменение: ${new Date(lastCreatedTime).toLocaleString()}`
-                    : undefined
+                lastCreatedTime ? (
+                    <LocalTime date={lastCreatedTime} />
+                ) : undefined
             }
             diff={data.diffFromYesterday}
             value={data.count}

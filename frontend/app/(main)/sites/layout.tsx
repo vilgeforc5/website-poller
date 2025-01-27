@@ -8,6 +8,7 @@ import { StartPollButtonWrapper } from "@/components/ActionButton/StartPollButto
 import { StartPollModal } from "@/components/Modals/Site/StartPollModal";
 import { serverFetch } from "@/lib/serverFetch";
 import { IPollingTaskLatestInfo } from "backend/dist/layers/polling-task/polling-task.types";
+import { LocalTime } from "@/components/LocalTime/LocalTime";
 
 export default async function SitesLayout({
     children,
@@ -29,8 +30,11 @@ export default async function SitesLayout({
                     mb="xl"
                     title="Cайты"
                     description={
-                        lastTime &&
-                        `Последнее обновление в ${new Date(lastTime).toLocaleString()}`
+                        lastTime && (
+                            <LocalTime date={lastTime}>
+                                Последнее обновление в{" "}
+                            </LocalTime>
+                        )
                     }
                     refresh={async () => {
                         "use server";

@@ -5,6 +5,7 @@ import { isUserAdmin } from "@/lib/serverJwtValues";
 import { PollsDropDown } from "@/components/SiteTable/Row/PollsDropDown/PollsDropDown";
 import { CodeStatusBadge } from "@/components/SiteTable/Row/CodeStatusBadge";
 import { WithRowFilters } from "@/components/SiteTable/Row/WithRowFilters";
+import { LocalTime } from "@/components/LocalTime/LocalTime";
 
 interface ISiteTableRowProps {
     row: ISiteInfo;
@@ -40,7 +41,9 @@ export const SiteTableRow = async ({ row }: ISiteTableRowProps) => {
                         </Text>
                     </GridCol>
                     <GridCol span={2}>
-                        <Text>{new Date(row.createdAt).toLocaleString()}</Text>
+                        <Text>
+                            <LocalTime date={row.createdAt} />
+                        </Text>
                     </GridCol>
                     <GridCol span={2}>
                         {lastStatusCode ? (

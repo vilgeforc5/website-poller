@@ -3,6 +3,7 @@ import { Anchor, Grid, GridCol, List, ListItem, Text } from "@mantine/core";
 import { RowControls } from "@/components/ParseTable/Row/RowControls";
 import { ParseInfoDropdown } from "@/components/ParseTable/Row/ParseInfoDropdown/ParseInfoDropDown";
 import { isUserAdmin } from "@/lib/serverJwtValues";
+import { LocalTime } from "@/components/LocalTime/LocalTime";
 
 export const Row = async ({ row }: { row: IDataSourceTableInfo }) => {
     const lastPolled = row.lastPolled;
@@ -40,10 +41,12 @@ export const Row = async ({ row }: { row: IDataSourceTableInfo }) => {
                     </Text>
                 </GridCol>
                 <GridCol span={2}>
-                    <Text>{new Date(row.createdAt).toLocaleString()}</Text>
+                    <Text>
+                        <LocalTime date={row.createdAt} />
+                    </Text>
                 </GridCol>
                 <GridCol span={2}>
-                    {lastPolled ? new Date(lastPolled).toLocaleString() : "-"}
+                    {lastPolled ? <LocalTime date={lastPolled} /> : "-"}
                 </GridCol>
                 {isAdmin && (
                     <GridCol span={2}>
