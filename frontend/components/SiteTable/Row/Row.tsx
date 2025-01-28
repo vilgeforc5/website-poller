@@ -25,6 +25,7 @@ export const SiteTableRow = async ({ row }: ISiteTableRowProps) => {
                         <RowControls
                             disableDropDown={row.polls.length === 0}
                             id={row.id}
+                            hasDeletionFeature={isAdmin}
                         />
                     </GridCol>
                     <GridCol span={5}>

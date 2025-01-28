@@ -61,4 +61,12 @@ export class UserRepository {
             },
         });
     }
+
+    async getAll() {
+        return this.user.findMany();
+    }
+
+    async delete(id: number) {
+        return this.user.delete({ where: { id } });
+    }
 }

@@ -5,7 +5,6 @@ import { PollingTaskService } from "src/layers/polling-task/polling-task.service
 import { EnumRequestMethod, UpdateTrigger } from "@prisma/client";
 import { ConfigService } from "src/layers/config/config.service";
 import { TelegramService } from "src/layers/telegram/telegram.service";
-import { SiteService } from "src/layers/site/site.service";
 
 @Injectable()
 export class PollerService {
@@ -15,7 +14,6 @@ export class PollerService {
         private readonly worker: PollerWorker,
         private readonly config: ConfigService,
         private readonly telegramService: TelegramService,
-        private readonly siteService: SiteService,
     ) {
         logger.setContext(PollerService.name);
     }
@@ -90,28 +88,28 @@ export class PollerService {
                 endTime,
             });
 
-            const sites =
-                await this.siteService.getAllForPollingTask(pollingTaskId);
-
-            const resultInfoMessage = sites.reduce<string>((acc, site) => {
-                const latestPoll = site.polls.at(0);
-
-                if (
-                    !latestPoll ||
-                    (latestPoll.statusCode >= 200 &&
-                        latestPoll.statusCode < 300)
-                ) {
-                    return acc;
-                }
-
-                const message = `${site.address}: \nКод ${latestPoll.statusCode} | Попыток ${latestPoll.retryCount}`;
-
-                return acc + "\n" + message;
-            }, "");
-
-            await this.telegramService.broadcast(
-                `Опрос в ${new Date().toISOString()}\nВсего: ${sites.length} cайтов\nОшибки:\n${resultInfoMessage || "Нет ошибок."}`,
-            );
+            // const sites =
+            //     await this.siteService.getAllForPollingTask(pollingTaskId);
+            //
+            // const resultInfoMessage = sites.reduce<string>((acc, site) => {
+            //     const latestPoll = site.polls.at(0);
+            //
+            //     if (
+            //         !latestPoll ||
+            //         (latestPoll.statusCode >= 200 &&
+            //             latestPoll.statusCode < 300)
+            //     ) {
+            //         return acc;
+            //     }
+            //
+            //     const message = `${site.address}: \nКод ${latestPoll.statusCode} | Попыток ${latestPoll.retryCount}`;
+            //
+            //     return acc + "\n" + message;
+            // }, "");
+            //
+            // await this.telegramService.broadcast(
+            //     `Опрос в ${new Date().toISOString()}\nВсего: ${sites.length} cайтов\nОшибки:\n${resultInfoMessage || "Нет ошибок."}`,
+            // );
         }
     }
 }

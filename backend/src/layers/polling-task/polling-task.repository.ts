@@ -67,4 +67,17 @@ export class PollingTaskRepository {
             },
         });
     }
+
+    async deleteOlderThan(daysAgo = 7) {
+        const pastDate = new Date();
+        pastDate.setDate(pastDate.getDate() - daysAgo);
+
+        return this.pollingTask.deleteMany({
+            where: {
+                startTime: {
+                    lt: pastDate,
+                },
+            },
+        });
+    }
 }

@@ -41,4 +41,8 @@ export class PollingTaskService {
             lastTaskTime: endTime ? endTime.toString() : null,
         };
     }
+
+    async deleteOld() {
+        return this.pollingRepository.deleteOlderThan();
+    }
 }

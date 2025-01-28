@@ -25,6 +25,7 @@ model User {
   dataSourceTables DataSourceTable[]
 
   @@map("users")
+  @@index([email, role]) 
 }
 
 model Site {
@@ -35,6 +36,9 @@ model Site {
   polls                        Poll[]
   dataSourceTableParsingTaskId Int?
   dataSourceTableParse         DataSourceTableParsingTask? @relation(fields: [dataSourceTableParsingTaskId], references: [id])
+
+  @@index([address, createdAt, id])
+  @@index([dataSourceTableParsingTaskId])
 }
 
 model Poll {
@@ -59,6 +63,8 @@ model PollingTask {
   endTime       DateTime?
   polls         Poll[]
   error         String?
+
+  @@index([pollingState, updateTrigger])
 }
 
 model DataSourceTable {
@@ -81,6 +87,9 @@ model DataSourceTableParsingTask {
   error             String?
   dataSourceTable   DataSourceTable @relation(fields: [dataSourceTableId], references: [id], onDelete: Cascade)
   dataSourceTableId Int
+
+  @@index([dataSourceTableId])
+  @@index([workingState, updateTrigger])
 }
 
 model Config {

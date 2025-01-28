@@ -15,6 +15,7 @@ import { GetCurrentUserId } from "src/common/decorators/GetCurrentUserId";
 import { GetCurrentUser } from "src/common/decorators/GetCurrentUser";
 import { RtGuard } from "src/common/guards/rt.guard";
 import { SignUpDto } from "src/auth/dto/signUp.dto";
+import { ChangePasswordDto } from "src/auth/dto/change-password.dto";
 
 @Controller("auth")
 export class AuthController {
@@ -32,6 +33,14 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     signInLocal(@Body() dto: AuthDto): Promise<Tokens> {
         return this.authService.signIn(dto);
+    }
+
+    @Post("change-password")
+    changePassword(
+        @GetCurrentUserId() userId: number,
+        @Body() dto: ChangePasswordDto,
+    ) {
+        return this.authService.changePassword(userId, dto);
     }
 
     @Post("logout")

@@ -15,5 +15,5 @@ export const routes: Array<{
     { href: routeLinks.dashboard, label: "Главная" },
     { href: routeLinks.sites, label: "Сайты" },
     { href: routeLinks.tables, label: "Парсинг" },
-    { href: routeLinks.settings, label: "Настройки", isAdminOnly: true },
+    { href: routeLinks.settings, label: "Настройки" },
 ];

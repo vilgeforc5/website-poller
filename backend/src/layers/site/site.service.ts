@@ -71,4 +71,8 @@ export class SiteService {
     getAllForPollingTask(pollingTaskId: number) {
         return this.siteRepository.getAllForPollingTask(pollingTaskId);
     }
+
+    async delete(siteId: number) {
+        return this.siteRepository.delete(siteId);
+    }
 }

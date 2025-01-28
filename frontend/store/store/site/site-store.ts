@@ -4,6 +4,7 @@ export type SiteState = {
     startPollModalOpen: boolean;
     openedDropdowns: number[];
     filteredStatusCodes: number[];
+    targetToDeletionId?: number;
 };
 
 export type SiteActions = {
@@ -14,6 +15,7 @@ export type SiteActions = {
     closeDropDown: (id: number) => void;
     toggleDropDown: (id: number) => void;
     handleStatusCode: (code: number) => void;
+    setTargetToDeletionId: (id?: number) => void;
 };
 
 export type SiteStore = SiteState & SiteActions;
@@ -79,6 +81,14 @@ export const createSiteStore = (initState: SiteState = defaultInitState) => {
                     filteredStatusCodes: newCodes.length
                         ? newCodes
                         : defaultInitState.filteredStatusCodes,
+                };
+            }),
+
+        setTargetToDeletionId: (targetToDeletionId?: number) =>
+            set((state) => {
+                return {
+                    ...state,
+                    targetToDeletionId,
                 };
             }),
     }));

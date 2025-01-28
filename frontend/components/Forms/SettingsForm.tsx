@@ -22,7 +22,7 @@ import {
 import { Form, useForm } from "@mantine/form";
 import { IconPlus, IconTrash } from "@tabler/icons-react";
 import { useState } from "react";
-import { creatDataSourceTablesAction } from "@/lib/actions/settings/updateSettingsAction";
+import { updateSettingsAction } from "@/lib/actions/settings/updateSettingsAction";
 import { notifications } from "@mantine/notifications";
 
 const removeKey = (thisIsObject: Record<string, any>, targetKey: string) => {
@@ -58,7 +58,7 @@ export const SettingsForm = ({ data }: { data: IConfig }) => {
                 form={form}
                 onSubmit={async (values) => {
                     form.setSubmitting(true);
-                    const result = await creatDataSourceTablesAction({
+                    const result = await updateSettingsAction({
                         ...values,
                         headers: JSON.stringify(form.values.headers),
                     });
@@ -219,7 +219,6 @@ export const SettingsForm = ({ data }: { data: IConfig }) => {
                         disabled={form.submitting}
                         w="fit-content"
                         type="submit"
-                        color="green"
                     >
                         Обновить
                     </Button>

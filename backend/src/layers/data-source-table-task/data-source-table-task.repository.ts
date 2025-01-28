@@ -121,4 +121,17 @@ export class DataSourceTableTaskRepository {
               }
             : {};
     }
+
+    async deleteOlderThan(daysAgo = 7) {
+        const pastDate = new Date();
+        pastDate.setDate(pastDate.getDate() - daysAgo);
+
+        return this.dataSourceTableTask.deleteMany({
+            where: {
+                startTime: {
+                    lt: pastDate,
+                },
+            },
+        });
+    }
 }

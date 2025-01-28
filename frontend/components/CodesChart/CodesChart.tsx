@@ -24,7 +24,6 @@ export const CodesChart = ({ data, ...others }: CodesChartProps) => {
                 <BarChart
                     h={350}
                     data={data.map((data) => {
-                        console.log(data.date);
                         return {
                             ...data,
                             date: new Date(data.date).toLocaleString(),

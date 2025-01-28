@@ -55,4 +55,12 @@ export class UsersService {
             throw new InternalServerErrorException("no admin found");
         }
     }
+
+    async getAll() {
+        return this.userRepository.getAll();
+    }
+
+    async delete(id: number) {
+        return this.userRepository.delete(id);
+    }
 }

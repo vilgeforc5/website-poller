@@ -9,6 +9,7 @@ import { StartPollModal } from "@/components/Modals/Site/StartPollModal";
 import { serverFetch } from "@/lib/serverFetch";
 import { IPollingTaskLatestInfo } from "backend/dist/layers/polling-task/polling-task.types";
 import { LocalTime } from "@/components/LocalTime/LocalTime";
+import { DeleteSiteModal } from "@/components/Modals/Site/DeleteSiteModal";
 
 export default async function SitesLayout({
     children,
@@ -25,6 +26,7 @@ export default async function SitesLayout({
     return (
         <SiteStoreProvider>
             <StartPollModal />
+            <DeleteSiteModal />
             <Group justify="space-between" align="center">
                 <PageTitle
                     mb="xl"

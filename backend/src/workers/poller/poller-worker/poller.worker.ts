@@ -60,7 +60,6 @@ export class PollerWorker extends ChunkWorker<
         retryCountConfig: number = 5,
         headers: Record<string, string>,
     ): Observable<Array<PollerWorkerProcessedData>> {
-        console.log({ headers, retryCountConfig, method });
         const axiosMethodMap: Record<EnumRequestMethod, string> = {
             GET: "get",
             HEAD: "head",
@@ -130,11 +129,6 @@ export class PollerWorker extends ChunkWorker<
         }: PollerWorkerScope,
     ) {
         return new Promise((res) => {
-            console.log(
-                sites.length,
-                sites.map((site) => site.address),
-            );
-
             this.pollWebsites(
                 sites.map((site) => site.address),
                 requestMethod,

@@ -52,4 +52,8 @@ export class DataSourceTableTaskService {
             ),
         };
     }
+
+    async deleteOld() {
+        return this.dataSourceTableTaskRepository.deleteOlderThan();
+    }
 }

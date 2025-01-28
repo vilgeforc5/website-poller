@@ -125,4 +125,8 @@ export class SiteRepository {
 
         return !isAdmin ? { users: { some: { id: userId } } } : {};
     }
+
+    delete(siteId: number) {
+        return this.site.delete({ where: { id: siteId } });
+    }
 }

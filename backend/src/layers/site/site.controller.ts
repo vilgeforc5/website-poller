@@ -2,16 +2,21 @@ import {
     BadRequestException,
     Body,
     Controller,
+    Delete,
     Get,
     HttpCode,
     HttpStatus,
+    Param,
     Post,
     Query,
+    UseGuards,
 } from "@nestjs/common";
 import { SiteService } from "src/layers/site/site.service";
 import { GetCurrentUserId } from "src/common/decorators/GetCurrentUserId";
 import { ISiteInfo } from "src/layers/site/site.types";
 import { CreateSiteDto } from "src/layers/site/dto/create-site.dto";
+import { Roles } from "src/common/decorators/Roles";
+import { RoleGuard } from "src/common/guards/role.guard";
 
 @Controller("site")
 export class SiteController {
@@ -21,6 +26,14 @@ export class SiteController {
     @Get("latest-info")
     countInfo(@GetCurrentUserId() userId: number) {
         return this.siteService.getLatestInfo(userId);
+    }
+
+    @Roles(["ADMIN", "OWNER"])
+    @UseGuards(RoleGuard)
+    @HttpCode(HttpStatus.OK)
+    @Delete("/:id")
+    async delete(@Param("id") siteId: number) {
+        return this.siteService.delete(siteId);
     }
 
     @HttpCode(HttpStatus.CREATED)

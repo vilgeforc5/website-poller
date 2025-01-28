@@ -5,6 +5,9 @@ import { UsersService } from "src/layers/users/users.service";
 import { PollerService } from "src/workers/poller/poller.service";
 import { PinoLogger } from "nestjs-pino";
 import { DataSourceTableParserService } from "src/workers/data-source-table-parser/data-source-table-parser.service";
+import { PollingTaskService } from "src/layers/polling-task/polling-task.service";
+import { TelegramService } from "src/layers/telegram/telegram.service";
+import { DataSourceTableTaskService } from "src/layers/data-source-table-task/data-source-table-task.service";
 
 @Injectable()
 export class SchedulerService implements OnApplicationBootstrap {
@@ -14,6 +17,9 @@ export class SchedulerService implements OnApplicationBootstrap {
         private readonly pollerService: PollerService,
         private readonly parserService: DataSourceTableParserService,
         private readonly logger: PinoLogger,
+        private readonly pollingTaskService: PollingTaskService,
+        private readonly telegramService: TelegramService,
+        private readonly sourceTableParse: DataSourceTableTaskService,
     ) {
         this.logger.setContext(SchedulerService.name);
     }
@@ -33,8 +39,11 @@ export class SchedulerService implements OnApplicationBootstrap {
             this.parsingJob.bind(this),
         );
 
+        const clearJob = new CronJob("0 0 * * 0", this.clearOldJob.bind(this));
+
         this.scheduleRegistry.addCronJob("polling", pollingJob);
         this.scheduleRegistry.addCronJob("parsing", parsingJob);
+        this.scheduleRegistry.addCronJob("deletingOld", clearJob);
 
         pollingJob.start();
         parsingJob.start();
@@ -52,5 +61,16 @@ export class SchedulerService implements OnApplicationBootstrap {
 
         const privilegedUserId = await this.userService.getPrivilegedUserId();
         this.parserService.parseAll(privilegedUserId);
+    }
+
+    private async clearOldJob() {
+        const oldPolls = await this.pollingTaskService.deleteOld();
+        const oldTableParse = await this.sourceTableParse.deleteOld();
+
+        await this.telegramService.broadcast(
+            `Удалил старые записи для опросов сайтов (${oldPolls.count} штук)\n
+             Удалил старые записи для парсинга таблиц (${oldTableParse.count} штук)
+            `,
+        );
     }
 }
