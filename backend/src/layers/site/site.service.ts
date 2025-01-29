@@ -72,6 +72,10 @@ export class SiteService {
         return this.siteRepository.getAllForPollingTask(pollingTaskId);
     }
 
+    getAllFailedToday(userId: number) {
+        return this.siteRepository.getAllFailedToday(userId);
+    }
+
     async delete(siteId: number) {
         return this.siteRepository.delete(siteId);
     }

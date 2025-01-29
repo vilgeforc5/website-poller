@@ -72,7 +72,7 @@ export class PollerWorker extends ChunkWorker<
 
             return from(
                 this.httpService[axiosMethodMap[method]](url, {
-                    timeout: 2000,
+                    timeout: 10000,
                     headers,
                 }).pipe(
                     map((response: AxiosResponse) => ({

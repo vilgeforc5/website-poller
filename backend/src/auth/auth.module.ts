@@ -10,5 +10,6 @@ import { UsersModule } from "src/layers/users/users.module";
     imports: [JwtModule.register({}), UsersModule],
     controllers: [AuthController],
     providers: [AuthService, AtStrategy, RtStrategy],
+    exports: [AuthService],
 })
 export class AuthModule {}

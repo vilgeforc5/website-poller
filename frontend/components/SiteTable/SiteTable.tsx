@@ -13,23 +13,28 @@ const sitesPerPageDefault = 50;
 interface ISiteTableProps {
     sitesPerPage?: string;
     page?: string;
+    codes?: string;
 }
 
-export const SiteTable = async ({ sitesPerPage, page }: ISiteTableProps) => {
+export const SiteTable = async ({
+    sitesPerPage,
+    page,
+    codes,
+}: ISiteTableProps) => {
     const siteCountPerPage =
         parseInt(sitesPerPage || `${sitesPerPageDefault}`) ||
         sitesPerPageDefault;
     const pageNum = parseInt(page || "1") || 1;
 
     const { data: totalSiteCount } = await serverFetch<number>(
-        "/site/total-count",
+        `/site/total-count?${codes ? `codes=${codes}` : ""}`,
         {
             next: { tags: [revalidationKeys["sites"]] },
         },
     );
 
     const { data: sites } = await serverFetch<ISiteInfo[]>(
-        `/site/get-paginated?limit=${siteCountPerPage}&skip=${(pageNum - 1) * siteCountPerPage}&take=5`,
+        `/site/get-paginated?limit=${siteCountPerPage}&skip=${(pageNum - 1) * siteCountPerPage}&take=5&codesParam=${codes || ""}`,
         {
             next: { tags: [revalidationKeys["sites"]] },
         },

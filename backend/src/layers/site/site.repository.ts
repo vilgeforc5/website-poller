@@ -120,6 +120,53 @@ export class SiteRepository {
         });
     }
 
+    async getAllFailedToday(userId: number) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const filter = await this.idFilter(userId);
+
+        const sitesWithFailedPolls = await this.site.findMany({
+            where: {
+                ...filter,
+                polls: {
+                    some: {
+                        statusCode: {
+                            not: {
+                                in: Array.from(
+                                    { length: 100 },
+                                    (_, i) => 200 + i,
+                                ),
+                            },
+                        },
+                        createdAt: {
+                            gte: today,
+                        },
+                    },
+                },
+            },
+            include: {
+                polls: {
+                    where: {
+                        statusCode: {
+                            not: {
+                                in: Array.from(
+                                    { length: 100 },
+                                    (_, i) => 200 + i,
+                                ),
+                            },
+                        },
+                        createdAt: {
+                            gte: today,
+                        },
+                    },
+                },
+            },
+        });
+
+        return sitesWithFailedPolls;
+    }
+
     private async idFilter(userId: number) {
         const isAdmin = await this.userService.isAdmin(userId);
 

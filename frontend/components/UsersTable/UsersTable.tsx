@@ -13,6 +13,7 @@ export const UsersTable = async () => {
             <Title order={4}>Все пользователи</Title>
             {data.map((user) => (
                 <GridCol
+                    key={user.email}
                     span={12}
                     component={Grid}
                     style={{

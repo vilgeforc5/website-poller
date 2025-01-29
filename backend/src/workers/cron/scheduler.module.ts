@@ -7,6 +7,7 @@ import { DataSourceTableParserModule } from "src/workers/data-source-table-parse
 import { TelegramModule } from "src/layers/telegram/telegram.module";
 import { PollingTaskModule } from "src/layers/polling-task/polling-task.module";
 import { DataSourceTableTaskModule } from "src/layers/data-source-table-task/data-source-table-task.module";
+import { SiteModule } from "src/layers/site/site.module";
 
 @Module({
     imports: [
@@ -17,6 +18,7 @@ import { DataSourceTableTaskModule } from "src/layers/data-source-table-task/dat
         TelegramModule,
         PollingTaskModule,
         DataSourceTableTaskModule,
+        SiteModule,
     ],
     providers: [SchedulerService],
 })

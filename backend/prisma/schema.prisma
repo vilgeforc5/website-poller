@@ -23,9 +23,10 @@ model User {
   role             Role              @default(USER)
   sites            Site[]
   dataSourceTables DataSourceTable[]
+  telegramUser     TelegramUser?
 
+  @@index([email, role])
   @@map("users")
-  @@index([email, role]) 
 }
 
 model Site {
@@ -103,8 +104,10 @@ model Config {
 }
 
 model TelegramUser {
-  id     Int @id @default(autoincrement())
-  chatId Int @unique
+  id     Int  @id @default(autoincrement())
+  chatId Int  @unique
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int  @unique
 }
 
 enum DataSourceTableProvider {

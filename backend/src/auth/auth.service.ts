@@ -47,13 +47,26 @@ export class AuthService {
         return tokens;
     }
 
+    async verifyCredentials(email: string, password: string) {
+        const user = await this.usersService.findByEmail(email);
+
+        if (!user) {
+            return null;
+        }
+
+        const passwordMatches = await argon.verify(user.hash, password);
+
+        if (!passwordMatches) {
+            return null;
+        }
+
+        return user;
+    }
+
     async signIn(dto: AuthDto): Promise<Tokens> {
-        const user = await this.usersService.findByEmail(dto.email);
+        const user = await this.verifyCredentials(dto.email, dto.password);
 
         if (!user) throw new ForbiddenException("Access Denied");
-
-        const passwordMatches = await argon.verify(user.hash, dto.password);
-        if (!passwordMatches) throw new ForbiddenException("Access Denied");
 
         const tokens = await this.getTokens(user.id, user.email, user.role);
         await this.updateRtHash(user.id, tokens.refresh_token);

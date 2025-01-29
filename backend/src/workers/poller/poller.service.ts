@@ -79,6 +79,7 @@ export class PollerService {
             this.logger.error(error);
             await this.telegramService.broadcast(
                 `Случилась ошибка при polling'е сайтов:\n${error}`,
+                ["OWNER", "ADMIN"],
             );
         } finally {
             const endTime = new Date().toISOString();
