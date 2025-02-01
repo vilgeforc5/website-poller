@@ -26,7 +26,7 @@ export class SchedulerService implements OnApplicationBootstrap {
         this.logger.setContext(SchedulerService.name);
     }
 
-    onApplicationBootstrap() {
+    async onApplicationBootstrap() {
         this.registerJobs();
     }
 
@@ -81,8 +81,8 @@ export class SchedulerService implements OnApplicationBootstrap {
 
             if (fails.length === 0) {
                 await this.telegramService.sendToUser(
-                    user.id,
-                    "Сегодня не было ошибок сайтов.",
+                    user.userId,
+                    "Не было ошибок сайтов.",
                 );
 
                 return;
@@ -97,7 +97,7 @@ export class SchedulerService implements OnApplicationBootstrap {
                 }
             }
 
-            await this.telegramService.sendToUser(user.id, message);
+            await this.telegramService.sendToUser(user.userId, message);
         }
     }
 

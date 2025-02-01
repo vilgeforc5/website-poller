@@ -24,6 +24,7 @@ model User {
   sites            Site[]
   dataSourceTables DataSourceTable[]
   telegramUser     TelegramUser?
+  jobs             ScheduleJob[]
 
   @@index([email, role])
   @@map("users")
@@ -103,11 +104,24 @@ model Config {
   requestMethod      EnumRequestMethod @default(GET)
 }
 
+model ScheduleJob {
+  id     Int             @id @default(autoincrement())
+  type   ScheduleJobType
+  userId Int             @unique
+  user   User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
 model TelegramUser {
   id     Int  @id @default(autoincrement())
   chatId Int  @unique
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int  @unique
+}
+
+enum ScheduleJobType {
+  POLL
+  PARSE
+  TELEGRAM_INFO
 }
 
 enum DataSourceTableProvider {
