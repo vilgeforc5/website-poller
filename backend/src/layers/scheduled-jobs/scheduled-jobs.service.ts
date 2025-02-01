@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { CreateScheduledJobDto } from "src/layers/scheduled-jobs/dto/create-scheduled-job.dto";
 import { ScheduledJobsRepository } from "src/layers/scheduled-jobs/scheduled-jobs.repository";
 import { DeleteScheduledJobDto } from "src/layers/scheduled-jobs/dto/delete-scheduled-job.dto";
-import { UpdateScheduledJobDto } from "dist/scheduled-jobs/dto/update-scheduled-job.dto";
+import { UpdateScheduledJobDto } from "src/layers/scheduled-jobs/dto/update-scheduled-job.dto";
 
 @Injectable()
 export class ScheduledJobsService {
