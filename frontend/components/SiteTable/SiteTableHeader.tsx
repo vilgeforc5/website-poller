@@ -1,5 +1,5 @@
 import { Box, Grid, GridCol, Text } from "@mantine/core";
-import { isUserAdmin } from "@/lib/serverJwtValues";
+import { isUserAdmin } from "@/lib/jwtUtils";
 
 export const SiteTableHeader = async () => {
     const isAdmin = await isUserAdmin();

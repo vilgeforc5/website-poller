@@ -3,7 +3,7 @@
 import { Paper, PaperProps } from "@mantine/core";
 import { BarChart } from "@mantine/charts";
 import { TPollCodeInfo } from "backend/dist/layers/poll/poll.types";
-import { useIsHydrated } from "@/components/useHydrated";
+import { useIsHydrated } from "@/hooks/useHydrated";
 
 const paperProps: PaperProps = {
     p: "md",

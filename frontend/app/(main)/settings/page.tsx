@@ -1,5 +1,5 @@
 import { Stack } from "@mantine/core";
-import { isUserAdmin } from "@/lib/serverJwtValues";
+import { isUserAdmin } from "@/lib/jwtUtils";
 import { serverFetch } from "@/lib/serverFetch";
 import { IConfig } from "backend/dist/layers/config/config.types";
 import { revalidationKeys } from "@/lib/revalidationKeys";

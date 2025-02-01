@@ -73,7 +73,7 @@ export class TelegramService {
 
     async sendToUser(userId: number, message: string) {
         const user = await this.telegramRepository.findChatIdByUserId(userId);
-        console.log({ user });
+
         if (!user?.chatId) {
             return;
         }

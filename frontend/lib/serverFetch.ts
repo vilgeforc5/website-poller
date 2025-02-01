@@ -6,8 +6,9 @@ export const serverFetch = async <T>(
 ): Promise<{ ok: boolean; data: T }> => {
     const headersList = await cookies();
     const token = headersList.get("token");
+    const path = segment.startsWith("/") ? segment : `/${segment}`;
 
-    const response = await fetch(process.env.BASE_API_URL + segment, {
+    const response = await fetch(process.env.BASE_API_URL + path, {
         ...init,
         headers: {
             ...init.headers,

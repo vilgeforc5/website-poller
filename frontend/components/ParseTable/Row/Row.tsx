@@ -2,7 +2,7 @@ import { IDataSourceTableInfo } from "backend/dist/layers/data-source-table/data
 import { Anchor, Grid, GridCol, List, ListItem, Text } from "@mantine/core";
 import { RowControls } from "@/components/ParseTable/Row/RowControls";
 import { ParseInfoDropdown } from "@/components/ParseTable/Row/ParseInfoDropdown/ParseInfoDropDown";
-import { isUserAdmin } from "@/lib/serverJwtValues";
+import { isUserAdmin } from "@/lib/jwtUtils";
 import { LocalTime } from "@/components/LocalTime/LocalTime";
 
 export const Row = async ({ row }: { row: IDataSourceTableInfo }) => {

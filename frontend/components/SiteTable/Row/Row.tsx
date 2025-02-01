@@ -1,7 +1,7 @@
 import { ISiteInfo } from "backend/dist/layers/site/site.types";
 import { Anchor, Grid, GridCol, List, ListItem, Text } from "@mantine/core";
 import { RowControls } from "@/components/SiteTable/Row/RowControls";
-import { isUserAdmin } from "@/lib/serverJwtValues";
+import { isUserAdmin } from "@/lib/jwtUtils";
 import { PollsDropDown } from "@/components/SiteTable/Row/PollsDropDown/PollsDropDown";
 import { CodeStatusBadge } from "@/components/SiteTable/Row/CodeStatusBadge";
 import { WithRowFilters } from "@/components/SiteTable/Row/WithRowFilters";

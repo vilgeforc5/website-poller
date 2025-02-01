@@ -15,6 +15,7 @@ export function parseJwt(token: string): TokenGeneric | null {
 
 export function isTokenValid(token: string | undefined): boolean {
     if (!token) return false;
+
     const nowUnix = (+new Date() / 1e3) | 0;
     const decodedToken = parseJwt(token);
 

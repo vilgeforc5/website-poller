@@ -105,10 +105,13 @@ model Config {
 }
 
 model ScheduleJob {
-  id     Int             @id @default(autoincrement())
-  type   ScheduleJobType
-  userId Int             @unique
-  user   User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id       Int               @id @default(autoincrement())
+  type     ScheduleJobType
+  cronStr  String
+  timeZone String            @default("Europe/Moscow")
+  status   ScheduleJobStatus @default(STOPPED)
+  userId   Int               @unique
+  user     User              @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model TelegramUser {
@@ -121,7 +124,12 @@ model TelegramUser {
 enum ScheduleJobType {
   POLL
   PARSE
-  TELEGRAM_INFO
+  TELEGRAM_TODAY_INFO
+}
+
+enum ScheduleJobStatus {
+  SCHEDULED
+  STOPPED
 }
 
 enum DataSourceTableProvider {

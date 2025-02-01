@@ -1,7 +1,7 @@
 import { serverFetch } from "@/lib/serverFetch";
 import { User } from "backend/dist/layers/users/users.types";
 import { Grid, GridCol, Paper, Title } from "@mantine/core";
-import { getTokenValues } from "@/lib/serverJwtValues";
+import { getTokenValues } from "@/lib/jwtUtils";
 import { UserTableControls } from "@/components/UsersTable/Controls";
 
 export const UsersTable = async () => {

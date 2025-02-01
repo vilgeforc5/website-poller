@@ -14,6 +14,7 @@ import { DataSourceTableTaskModule } from "./layers/data-source-table-task/data-
 import { ConfigModule as AppConfigModule } from "./layers/config/config.module";
 import { SchedulerModule } from "src/workers/cron/scheduler.module";
 import { TelegramModule } from "src/layers/telegram/telegram.module";
+import { ScheduledJobsModule } from "./layers/scheduled-jobs/scheduled-jobs.module";
 
 @Module({
     imports: [
@@ -30,6 +31,7 @@ import { TelegramModule } from "src/layers/telegram/telegram.module";
         AppConfigModule,
         SchedulerModule,
         TelegramModule,
+        ScheduledJobsModule,
     ],
     providers: [
         {

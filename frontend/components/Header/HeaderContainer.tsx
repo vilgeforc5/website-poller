@@ -1,5 +1,5 @@
 import { Header } from "@/components/Header/Header";
-import { getTokenValues } from "@/lib/serverJwtValues";
+import { getTokenValues } from "@/lib/jwtUtils";
 
 export const HeaderContainer = async () => {
     const encrypted = await getTokenValues();

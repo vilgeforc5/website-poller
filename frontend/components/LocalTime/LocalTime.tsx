@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode, Suspense } from "react";
-import { useIsHydrated } from "@/components/useHydrated";
+import { useIsHydrated } from "@/hooks/useHydrated";
 
 export function LocalTime({
     date,
