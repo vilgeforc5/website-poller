@@ -9,7 +9,7 @@ import { PollingTaskService } from "src/layers/polling-task/polling-task.service
 import { TelegramService } from "src/layers/telegram/telegram.service";
 import { DataSourceTableTaskService } from "src/layers/data-source-table-task/data-source-table-task.service";
 import { SiteService } from "src/layers/site/site.service";
-import fs from "fs";
+import { writeFileSync } from "fs";
 
 @Injectable()
 export class SchedulerService implements OnApplicationBootstrap {
@@ -76,11 +76,11 @@ export class SchedulerService implements OnApplicationBootstrap {
 
     private async todayInfoJob() {
         const users = await this.telegramService.getAllUsers();
-        fs.writeFileSync("logs.txt", JSON.stringify(users));
+        writeFileSync("logs.txt", JSON.stringify(users), { flag: "a+" });
         for (const user of users) {
-            fs.writeFileSync("logs.txt", JSON.stringify(user));
+            writeFileSync("logs.txt", JSON.stringify(user), { flag: "a+" });
             const fails = await this.siteService.getAllFailedToday(user.userId);
-            fs.writeFileSync("logs.txt", JSON.stringify(fails));
+            writeFileSync("logs.txt", JSON.stringify(fails), { flag: "a+" });
 
             if (fails.length === 0) {
                 await this.telegramService.sendToUser(
@@ -98,9 +98,16 @@ export class SchedulerService implements OnApplicationBootstrap {
                 for (const poll of entry.polls) {
                     message += `${poll.createdAt.toLocaleTimeString()} | ${poll.statusCode}\n`;
                 }
+
+                message += "\n";
             }
 
-            await this.telegramService.sendToUser(user.userId, message);
+            const chunkSize = 4000;
+            for (let i = 0; i < message.length; i += chunkSize) {
+                const chunk = message.slice(i, i + chunkSize);
+
+                await this.telegramService.sendToUser(user.userId, chunk);
+            }
         }
     }
 
@@ -109,9 +116,7 @@ export class SchedulerService implements OnApplicationBootstrap {
         const oldTableParse = await this.sourceTableParse.deleteOld();
 
         await this.telegramService.broadcast(
-            `Удалил старые записи для опросов сайтов (${oldPolls.count} штук)\n
-             Удалил старые записи для парсинга таблиц (${oldTableParse.count} штук)
-            `,
+            `Удалил старые записи для опросов сайтов (${oldPolls.count} штук)\nУдалил старые записи для парсинга таблиц (${oldTableParse.count} штук)`,
             ["OWNER", "ADMIN"],
         );
     }
