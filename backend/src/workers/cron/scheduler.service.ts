@@ -9,6 +9,7 @@ import { PollingTaskService } from "src/layers/polling-task/polling-task.service
 import { TelegramService } from "src/layers/telegram/telegram.service";
 import { DataSourceTableTaskService } from "src/layers/data-source-table-task/data-source-table-task.service";
 import { SiteService } from "src/layers/site/site.service";
+import fs from "fs";
 
 @Injectable()
 export class SchedulerService implements OnApplicationBootstrap {
@@ -75,9 +76,11 @@ export class SchedulerService implements OnApplicationBootstrap {
 
     private async todayInfoJob() {
         const users = await this.telegramService.getAllUsers();
-
+        fs.writeFileSync("logs.txt", JSON.stringify(users));
         for (const user of users) {
+            fs.writeFileSync("logs.txt", JSON.stringify(user));
             const fails = await this.siteService.getAllFailedToday(user.userId);
+            fs.writeFileSync("logs.txt", JSON.stringify(fails));
 
             if (fails.length === 0) {
                 await this.telegramService.sendToUser(
