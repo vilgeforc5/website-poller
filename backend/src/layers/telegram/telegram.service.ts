@@ -5,7 +5,6 @@ import { TelegramRepository } from "src/layers/telegram/telegram.repository";
 import { ConfigService } from "@nestjs/config";
 import { AuthService } from "src/auth/auth.service";
 import { Role } from "@prisma/client";
-import { writeFileSync } from "fs";
 
 @Public()
 @Update()
@@ -74,7 +73,6 @@ export class TelegramService {
 
     async sendToUser(userId: number, message: string) {
         const user = await this.telegramRepository.findChatIdByUserId(userId);
-        writeFileSync("logs.txt", JSON.stringify(user), { flag: "a+" });
 
         if (!user?.chatId) {
             return;
@@ -85,9 +83,6 @@ export class TelegramService {
                 resolve(
                     await this.bot.telegram.sendMessage(user?.chatId, message),
                 );
-                writeFileSync("logs.txt", JSON.stringify(message), {
-                    flag: "a+",
-                });
             } catch (error) {
                 reject(error);
             }

@@ -9,7 +9,7 @@ import { PollingTaskService } from "src/layers/polling-task/polling-task.service
 import { TelegramService } from "src/layers/telegram/telegram.service";
 import { DataSourceTableTaskService } from "src/layers/data-source-table-task/data-source-table-task.service";
 import { SiteService } from "src/layers/site/site.service";
-import { writeFileSync } from "fs";
+import { entries, groupBy } from "lodash";
 
 @Injectable()
 export class SchedulerService implements OnApplicationBootstrap {
@@ -76,11 +76,8 @@ export class SchedulerService implements OnApplicationBootstrap {
 
     private async todayInfoJob() {
         const users = await this.telegramService.getAllUsers();
-        writeFileSync("logs.txt", JSON.stringify(users), { flag: "a+" });
         for (const user of users) {
-            writeFileSync("logs.txt", JSON.stringify(user), { flag: "a+" });
             const fails = await this.siteService.getAllFailedToday(user.userId);
-            writeFileSync("logs.txt", JSON.stringify(fails), { flag: "a+" });
 
             if (fails.length === 0) {
                 await this.telegramService.sendToUser(
@@ -91,16 +88,29 @@ export class SchedulerService implements OnApplicationBootstrap {
                 return;
             }
 
-            let message = "Ошибки за сегодня: \n\n";
-            for (const entry of fails) {
-                message += entry.address + "\n";
+            const groupedFails = groupBy(
+                fails,
+                (fail) => fail.polls.at(0)?.statusCode,
+            );
 
-                for (const poll of entry.polls) {
-                    message += `${poll.createdAt.toLocaleTimeString()} | ${poll.statusCode}\n`;
+            let message = "Ошибки за сегодня: \n";
+
+            for (const [code, sites] of entries(groupedFails)) {
+                message += `\nОшибки ${code}:\n`;
+
+                for (const site of sites) {
+                    message += `${site.address}\n`;
                 }
-
-                message += "\n";
             }
+            // for (const entry of fails) {
+            //     message += entry.address + "\n";
+            //
+            //     for (const poll of entry.polls) {
+            //         message += `${poll.createdAt.toLocaleTimeString()} | ${poll.statusCode}\n`;
+            //     }
+            //
+            //     message += "\n";
+            // }
 
             const chunkSize = 4000;
             for (let i = 0; i < message.length; i += chunkSize) {
