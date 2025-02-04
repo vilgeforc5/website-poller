@@ -43,7 +43,7 @@ export class SchedulerService implements OnApplicationBootstrap {
         );
 
         const todayInfoJob = new CronJob(
-            "0 18 * * *",
+            "0 11 * * *",
             this.todayInfoJob.bind(this),
         );
 
