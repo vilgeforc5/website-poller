@@ -6,14 +6,8 @@ import { Role } from "@prisma/client";
 export class TelegramRepository {
     constructor(private prismaService: PrismaService) {}
 
-    findByChatId(chatId: number) {
-        return this.prismaService.telegramUser.findUnique({
-            where: { chatId },
-        });
-    }
-
-    findChatIdByUserId(userId: number) {
-        return this.prismaService.telegramUser.findUnique({
+    findChatIdsByUserId(userId: number) {
+        return this.prismaService.telegramUser.findMany({
             where: { userId },
             select: {
                 chatId: true,
@@ -21,7 +15,7 @@ export class TelegramRepository {
         });
     }
 
-    createUserChat(chatId: number, userId: number) {
+    createUserChat(chatId: string, userId: number) {
         return this.prismaService.telegramUser.create({
             data: {
                 chatId,

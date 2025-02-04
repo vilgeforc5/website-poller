@@ -76,6 +76,7 @@ export class SchedulerService implements OnApplicationBootstrap {
 
     private async todayInfoJob() {
         const users = await this.telegramService.getAllUsers();
+
         for (const user of users) {
             const fails = await this.siteService.getAllFailedToday(user.userId);
 
@@ -102,15 +103,6 @@ export class SchedulerService implements OnApplicationBootstrap {
                     message += `${site.address}\n`;
                 }
             }
-            // for (const entry of fails) {
-            //     message += entry.address + "\n";
-            //
-            //     for (const poll of entry.polls) {
-            //         message += `${poll.createdAt.toLocaleTimeString()} | ${poll.statusCode}\n`;
-            //     }
-            //
-            //     message += "\n";
-            // }
 
             const chunkSize = 4000;
             for (let i = 0; i < message.length; i += chunkSize) {

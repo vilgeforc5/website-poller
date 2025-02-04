@@ -23,7 +23,7 @@ model User {
   role             Role              @default(USER)
   sites            Site[]
   dataSourceTables DataSourceTable[]
-  telegramUser     TelegramUser?
+  telegramUser     TelegramUser[]
   jobs             ScheduleJob[]
 
   @@index([email, role])
@@ -115,10 +115,10 @@ model ScheduleJob {
 }
 
 model TelegramUser {
-  id     Int  @id @default(autoincrement())
-  chatId Int  @unique
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId Int  @unique
+  id     Int    @id @default(autoincrement())
+  chatId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
 }
 
 enum ScheduleJobType {

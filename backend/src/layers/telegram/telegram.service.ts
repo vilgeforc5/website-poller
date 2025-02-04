@@ -5,6 +5,7 @@ import { TelegramRepository } from "src/layers/telegram/telegram.repository";
 import { ConfigService } from "@nestjs/config";
 import { AuthService } from "src/auth/auth.service";
 import { Role } from "@prisma/client";
+import { PinoLogger } from "nestjs-pino";
 
 @Public()
 @Update()
@@ -16,8 +17,10 @@ export class TelegramService {
         private readonly configService: ConfigService,
         private readonly telegramRepository: TelegramRepository,
         private readonly authService: AuthService,
+        private readonly logger: PinoLogger,
     ) {
         this.bot = bot;
+        this.logger.setContext(TelegramService.name);
     }
 
     @On("message")
@@ -47,23 +50,13 @@ export class TelegramService {
                 return;
             }
 
-            await this.telegramRepository.createUserChat(chatId, user.id);
+            await this.telegramRepository.createUserChat(
+                chatId.toString(),
+                user.id,
+            );
             await ctx.reply("Вы авторизованы. Бот готов к работе.");
 
             return;
-        }
-    }
-
-    private async isAuthorized(ctx: Scenes.SceneContext) {
-        const chatId = ctx?.chat?.id;
-
-        if (!chatId) {
-            return false;
-        }
-
-        const user = await this.telegramRepository.findByChatId(chatId);
-        if (!user) {
-            return false;
         }
     }
 
@@ -71,22 +64,43 @@ export class TelegramService {
         return this.telegramRepository.getAllUsers();
     }
 
-    async sendToUser(userId: number, message: string) {
-        const user = await this.telegramRepository.findChatIdByUserId(userId);
+    async sendToUser(userId: number, message: string): Promise<boolean> {
+        try {
+            const chats =
+                await this.telegramRepository.findChatIdsByUserId(userId);
 
-        if (!user?.chatId) {
-            return;
-        }
-
-        return new Promise(async (resolve, reject) => {
-            try {
-                resolve(
-                    await this.bot.telegram.sendMessage(user?.chatId, message),
-                );
-            } catch (error) {
-                reject(error);
+            if (!chats.length) {
+                return false;
             }
-        });
+
+            const chatIds = chats.map((chat) => chat.chatId);
+
+            await Promise.all(
+                chatIds.map(
+                    (chatId) =>
+                        new Promise(async (resolve, reject) => {
+                            try {
+                                resolve(
+                                    await this.bot.telegram.sendMessage(
+                                        chatId,
+                                        message,
+                                    ),
+                                );
+                            } catch (error) {
+                                this.logger.error(error);
+
+                                reject(error);
+                            }
+                        }),
+                ),
+            );
+
+            return true;
+        } catch (error) {
+            this.logger.error(error);
+
+            return false;
+        }
     }
 
     async broadcast(message: string, roles?: Role[]) {
