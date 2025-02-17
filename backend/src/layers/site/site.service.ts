@@ -76,7 +76,13 @@ export class SiteService {
         return this.siteRepository.getAllFailedToday(userId);
     }
 
-    async delete(siteId: number) {
-        return this.siteRepository.delete(siteId);
+    async disconnectOrDelete(userId: number, siteId: number) {
+        const userCount = await this.siteRepository.userCount(siteId);
+
+        if (userCount === 1) {
+            return this.siteRepository.delete(siteId);
+        }
+
+        return this.siteRepository.disconnectUser(userId, siteId);
     }
 }

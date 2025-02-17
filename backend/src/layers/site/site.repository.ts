@@ -173,7 +173,31 @@ export class SiteRepository {
         return !isAdmin ? { users: { some: { id: userId } } } : {};
     }
 
-    delete(siteId: number) {
+    async delete(siteId: number) {
         return this.site.delete({ where: { id: siteId } });
+    }
+
+    async userCount(siteId: number) {
+        const sites = await this.site.findUnique({
+            where: { id: siteId },
+            include: {
+                users: {},
+            },
+        });
+
+        return sites?.users.length || 0;
+    }
+
+    async disconnectUser(userId: number, siteId: number) {
+        return this.site.update({
+            where: { id: siteId },
+            data: {
+                users: {
+                    disconnect: {
+                        id: userId,
+                    },
+                },
+            },
+        });
     }
 }
